@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
+import { EmployeesModule } from './employees/employees.module';
+import { DepartmentsModule } from './departments/departments.module';
+import { CompanySettingsModule } from './company-settings/company-settings.module';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -24,6 +27,9 @@ import databaseConfig from './config/database.config';
     UsersModule,
     AuthModule,
     CaslModule,
+    EmployeesModule,
+    DepartmentsModule,
+    CompanySettingsModule,
   ],
 })
 export class AppModule {}
