@@ -87,12 +87,13 @@ Check out a few resources that may come in handy when working with NestJS:
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+## Diseño y Desarrollo
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Desarrollado originalmente por **Luis Angel Gutiérrez**, Ingeniero en Informática y Desarrollador de Software.
+
+- 🌐 **LinkedIn**: [https://www.linkedin.com/in/lrgutierrez/](https://www.linkedin.com/in/lrgutierrez/)
+- 💻 **GitHub**: [https://github.com/LR-Gutierrez](https://github.com/LR-Gutierrez)
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Propietario / Uso Comercial Restringido
