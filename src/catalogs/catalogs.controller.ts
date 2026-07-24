@@ -25,6 +25,7 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
   async findAll(
     @Query('pageIndex') pageIndex?: string,
     @Query('pageSize') pageSize?: string,
+    @Query('locale') locale?: string,
   ): Promise<{ list: T[]; total: number; pageIndex: number; pageSize: number }> {
     const take = pageSize ? parseInt(pageSize, 10) : 100;
     const skip = ((pageIndex ? parseInt(pageIndex, 10) : 1) - 1) * take;
@@ -33,6 +34,11 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
       take,
       skip,
     });
+    if (locale && locale !== 'en') {
+      for (const item of list) {
+        (item as any).displayName = (item as any).translations?.[locale] || item.name;
+      }
+    }
     return { list, total, pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1, pageSize: take };
   }
 

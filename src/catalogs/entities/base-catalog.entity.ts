@@ -16,9 +16,14 @@ export abstract class BaseCatalogEntity {
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
+  @Column({ type: 'jsonb', nullable: true })
+  translations: Record<string, string> | null;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  displayName?: string;
 }
