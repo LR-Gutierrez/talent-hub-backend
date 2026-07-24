@@ -33,10 +33,12 @@ export class DepartmentsController {
   async findAll(
     @Query('pageIndex') pageIndex?: string,
     @Query('pageSize') pageSize?: string,
+    @Query('query') query?: string,
   ) {
     return this.departmentsService.findAll({
       pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1,
       pageSize: pageSize ? parseInt(pageSize, 10) : 100,
+      query,
     });
   }
 

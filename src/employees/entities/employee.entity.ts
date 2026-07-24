@@ -14,6 +14,9 @@ import { EmployeeEducation } from './employee-education.entity';
 import { EmployeeUniform } from './employee-uniform.entity';
 import { EmployeeChild } from './employee-child.entity';
 import { EmployeeEmergencyContact } from './employee-emergency-contact.entity';
+import { Country } from '../../catalogs/entities/country.entity';
+import { MaritalStatus } from '../../catalogs/entities/marital-status.entity';
+import { Gender } from '../../catalogs/entities/gender.entity';
 
 @Entity('employees')
 export class Employee {
@@ -53,17 +56,33 @@ export class Employee {
   @Column({ nullable: true })
   documentId: string;
 
-  @Column({ nullable: true })
-  gender: string;
+  @ManyToOne(() => Gender, { nullable: true })
+  @JoinColumn({ name: 'genderId' })
+  genderRef: Gender;
 
   @Column({ nullable: true })
-  nationality: string;
+  genderId: string;
+
+  @ManyToOne(() => Country, { nullable: true })
+  @JoinColumn({ name: 'nationalityId' })
+  nationalityRef: Country;
 
   @Column({ nullable: true })
-  maritalStatus: string;
+  nationalityId: string;
+
+  @ManyToOne(() => MaritalStatus, { nullable: true })
+  @JoinColumn({ name: 'maritalStatusId' })
+  maritalStatusRef: MaritalStatus;
 
   @Column({ nullable: true })
-  placeOfBirth: string;
+  maritalStatusId: string;
+
+  @ManyToOne(() => Country, { nullable: true })
+  @JoinColumn({ name: 'placeOfBirthId' })
+  placeOfBirthRef: Country;
+
+  @Column({ nullable: true })
+  placeOfBirthId: string;
 
   @Column({ type: 'text', nullable: true })
   notes: string;

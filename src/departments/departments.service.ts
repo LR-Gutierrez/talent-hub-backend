@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { Department } from './entities/department.entity';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
@@ -12,10 +12,12 @@ export class DepartmentsService {
     private readonly departmentRepository: Repository<Department>,
   ) {}
 
-  async findAll(params: { pageIndex: number; pageSize: number }) {
-    const { pageIndex, pageSize } = params;
+  async findAll(params: { pageIndex: number; pageSize: number; query?: string }) {
+    const { pageIndex, pageSize, query } = params;
     const skip = (pageIndex - 1) * pageSize;
+    const where = query ? { name: ILike(`%${query}%`) } : {};
     const [list, total] = await this.departmentRepository.findAndCount({
+      where,
       order: { name: 'ASC' },
       skip,
       take: pageSize,

@@ -47,20 +47,20 @@ export class CreateEmployeeDto {
   documentId?: string;
 
   @IsOptional()
-  @IsString()
-  gender?: string;
+  @IsUUID()
+  genderId?: string;
 
   @IsOptional()
-  @IsString()
-  nationality?: string;
+  @IsUUID()
+  nationalityId?: string;
 
   @IsOptional()
-  @IsString()
-  maritalStatus?: string;
+  @IsUUID()
+  maritalStatusId?: string;
 
   @IsOptional()
-  @IsString()
-  placeOfBirth?: string;
+  @IsUUID()
+  placeOfBirthId?: string;
 
   @IsOptional()
   @IsString()

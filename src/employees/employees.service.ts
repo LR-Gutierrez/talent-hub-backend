@@ -53,7 +53,15 @@ export class EmployeesService {
       order,
       skip: (pageIndex - 1) * pageSize,
       take: pageSize,
-      relations: { status: true, supervisor: true, department: true },
+      relations: {
+        status: true,
+        supervisor: true,
+        department: true,
+        nationalityRef: true,
+        placeOfBirthRef: true,
+        maritalStatusRef: true,
+        genderRef: true,
+      },
     });
     return { list, total };
   }
@@ -69,6 +77,10 @@ export class EmployeesService {
         uniforms: true,
         children: true,
         emergencyContacts: true,
+        nationalityRef: true,
+        placeOfBirthRef: true,
+        maritalStatusRef: true,
+        genderRef: true,
       },
     });
     if (!employee) throw new NotFoundException('Employee not found');
