@@ -87,6 +87,9 @@ export class Employee {
   @Column({ type: 'text', nullable: true })
   notes: string;
 
+  @Column({ nullable: true })
+  photoUrl: string;
+
   @ManyToOne(() => Department, { nullable: true })
   @JoinColumn({ name: 'departmentId' })
   department: Department;

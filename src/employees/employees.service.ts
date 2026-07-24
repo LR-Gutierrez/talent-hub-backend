@@ -8,6 +8,8 @@ import { EmployeeEducation } from './entities/employee-education.entity';
 import { EmployeeUniform } from './entities/employee-uniform.entity';
 import { EmployeeChild } from './entities/employee-child.entity';
 import { EmployeeEmergencyContact } from './entities/employee-emergency-contact.entity';
+import { Department } from '../departments/entities/department.entity';
+import { Gender } from '../catalogs/entities/gender.entity';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { ChangeEmployeeStatusDto } from './dto/change-employee-status.dto';
@@ -29,6 +31,10 @@ export class EmployeesService {
     private readonly childRepository: Repository<EmployeeChild>,
     @InjectRepository(EmployeeEmergencyContact)
     private readonly emergencyContactRepository: Repository<EmployeeEmergencyContact>,
+    @InjectRepository(Department)
+    private readonly departmentRepository: Repository<Department>,
+    @InjectRepository(Gender)
+    private readonly genderRepository: Repository<Gender>,
   ) {}
 
   async findAll(params: {
@@ -271,8 +277,65 @@ export class EmployeesService {
     });
   }
 
+  async updatePhotoUrl(id: string, photoUrl: string) {
+    await this.employeeRepository.update(id, { photoUrl });
+  }
+
   async remove(id: string) {
     const employee = await this.findOne(id);
     await this.employeeRepository.remove(employee);
+  }
+
+  async getStats() {
+    const totalEmployees = await this.employeeRepository.count();
+    const totalDepartments = await this.departmentRepository.count({ where: { isActive: true } });
+    const totalStatuses = await this.statusRepository.count();
+    const totalGenders = await this.genderRepository.count();
+
+    const rawByStatus = await this.employeeRepository
+      .createQueryBuilder('employee')
+      .select('employee.statusId', 'statusId')
+      .addSelect('status.name', 'statusName')
+      .addSelect('status.color', 'color')
+      .addSelect('COUNT(employee.id)', 'count')
+      .innerJoin('employee.status', 'status')
+      .groupBy('employee.statusId')
+      .addGroupBy('status.name')
+      .addGroupBy('status.color')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+    const employeesByStatus = rawByStatus.map((r) => ({ ...r, count: Number(r.count) }));
+
+    const rawByDepartment = await this.employeeRepository
+      .createQueryBuilder('employee')
+      .select('employee.departmentId', 'departmentId')
+      .addSelect('COALESCE(department.name, \'Unassigned\')', 'departmentName')
+      .addSelect('COUNT(employee.id)', 'count')
+      .leftJoin('employee.department', 'department')
+      .groupBy('employee.departmentId')
+      .addGroupBy('department.name')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+    const employeesByDepartment = rawByDepartment.map((r) => ({ ...r, count: Number(r.count) }));
+
+    const rawByGender = await this.employeeRepository
+      .createQueryBuilder('employee')
+      .select('employee.genderId', 'genderId')
+      .addSelect('COALESCE(gender.name, \'Unassigned\')', 'genderName')
+      .addSelect('COUNT(employee.id)', 'count')
+      .leftJoin('employee.genderRef', 'gender')
+      .groupBy('employee.genderId')
+      .addGroupBy('gender.name')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+    const employeesByGender = rawByGender.map((r) => ({ ...r, count: Number(r.count) }));
+
+    const recentEmployees = await this.employeeRepository.find({
+      order: { createdAt: 'DESC' },
+      take: 5,
+      relations: { status: true, department: true },
+    });
+
+    return { totalEmployees, totalDepartments, totalStatuses, totalGenders, employeesByStatus, employeesByDepartment, employeesByGender, recentEmployees };
   }
 }

@@ -68,6 +68,10 @@ export class CreateEmployeeDto {
 
   @IsOptional()
   @IsString()
+  photoUrl?: string;
+
+  @IsOptional()
+  @IsString()
   educationLevel?: string;
 
   @IsOptional()

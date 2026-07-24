@@ -9,7 +9,14 @@ import {
   Req,
   Query,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  NotFoundException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import * as fs from 'fs';
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
@@ -53,6 +60,13 @@ export class EmployeesController {
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)
+  @Get('stats')
+  @RequireAbility('read', 'Employee')
+  getStats() {
+    return this.employeesService.getStats();
+  }
+
+  @UseGuards(AuthGuard, PoliciesGuard)
   @Get(':id')
   @RequireAbility('read', 'Employee')
   findOne(@Param('id') id: string) {
@@ -78,6 +92,42 @@ export class EmployeesController {
   @RequireAbility('update', 'Employee')
   changeStatus(@Param('id') id: string, @Body() dto: ChangeEmployeeStatusDto, @Req() req: any) {
     return this.employeesService.changeStatus(id, dto, req.user?.email);
+  }
+
+  @UseGuards(AuthGuard, PoliciesGuard)
+  @Post(':id/photo')
+  @RequireAbility('update', 'Employee')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_req, _file, cb) => {
+          const dir = join(__dirname, '..', '..', 'uploads', 'employees');
+          fs.mkdirSync(dir, { recursive: true });
+          cb(null, dir);
+        },
+        filename: (_req, file, cb) => {
+          const ext = extname(file.originalname) || '.jpg';
+          cb(null, `employee-${Date.now()}${ext}`);
+        },
+      }),
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
+  async uploadPhoto(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const employee = await this.employeesService.findOne(id);
+    if (!employee) throw new NotFoundException('Employee not found');
+
+    if (employee.photoUrl) {
+      const oldPath = join(__dirname, '..', '..', 'uploads', 'employees', employee.photoUrl.split('/').pop()!);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+
+    const photoUrl = `/uploads/employees/${file.filename}`;
+    await this.employeesService.updatePhotoUrl(id, photoUrl);
+    return { photoUrl };
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)
