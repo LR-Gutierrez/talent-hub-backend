@@ -13,6 +13,7 @@ import { Department } from '../../departments/entities/department.entity';
 import { EmployeeEducation } from './employee-education.entity';
 import { EmployeeUniform } from './employee-uniform.entity';
 import { EmployeeChild } from './employee-child.entity';
+import { EmployeeEmergencyContact } from './employee-emergency-contact.entity';
 
 @Entity('employees')
 export class Employee {
@@ -27,6 +28,21 @@ export class Employee {
 
   @Column({ nullable: true })
   phone: string;
+
+  @Column({ nullable: true })
+  phoneExtension: string;
+
+  @Column({ nullable: true })
+  corporatePhone: string;
+
+  @Column({ nullable: true })
+  satellitePhone: string;
+
+  @Column({ nullable: true })
+  roomPhone: string;
+
+  @Column({ nullable: true })
+  mobilePhone: string;
 
   @Column({ nullable: true })
   address: string;
@@ -62,6 +78,9 @@ export class Employee {
   @Column({ nullable: true })
   position: string;
 
+  @Column({ nullable: true })
+  contractingCompany: string;
+
   @Column({ type: 'date', nullable: true })
   hireDate: string;
 
@@ -96,6 +115,9 @@ export class Employee {
 
   @OneToMany(() => EmployeeChild, (child) => child.employee, { cascade: true })
   children: EmployeeChild[];
+
+  @OneToMany(() => EmployeeEmergencyContact, (contact) => contact.employee, { cascade: true })
+  emergencyContacts: EmployeeEmergencyContact[];
 
   @CreateDateColumn()
   createdAt: Date;

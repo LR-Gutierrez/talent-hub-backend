@@ -7,6 +7,7 @@ import { EmployeeHistory } from './entities/employee-history.entity';
 import { EmployeeEducation } from './entities/employee-education.entity';
 import { EmployeeUniform } from './entities/employee-uniform.entity';
 import { EmployeeChild } from './entities/employee-child.entity';
+import { EmployeeEmergencyContact } from './entities/employee-emergency-contact.entity';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { ChangeEmployeeStatusDto } from './dto/change-employee-status.dto';
@@ -26,6 +27,8 @@ export class EmployeesService {
     private readonly uniformRepository: Repository<EmployeeUniform>,
     @InjectRepository(EmployeeChild)
     private readonly childRepository: Repository<EmployeeChild>,
+    @InjectRepository(EmployeeEmergencyContact)
+    private readonly emergencyContactRepository: Repository<EmployeeEmergencyContact>,
   ) {}
 
   async findAll(params: {
@@ -65,6 +68,7 @@ export class EmployeesService {
         educations: true,
         uniforms: true,
         children: true,
+        emergencyContacts: true,
       },
     });
     if (!employee) throw new NotFoundException('Employee not found');
@@ -75,7 +79,7 @@ export class EmployeesService {
     const status = await this.statusRepository.findOneBy({ id: dto.statusId });
     if (!status) throw new NotFoundException('EmployeeStatus not found');
 
-    const { children, ...employeeData } = dto;
+    const { children, emergencyContacts, ...employeeData } = dto;
 
     const employee = this.employeeRepository.create(employeeData);
     const saved = await this.employeeRepository.save(employee);
@@ -85,6 +89,13 @@ export class EmployeesService {
         this.childRepository.create({ ...c, employeeId: saved.id }),
       );
       await this.childRepository.save(childEntities);
+    }
+
+    if (emergencyContacts?.length) {
+      const contactEntities = emergencyContacts.map((c) =>
+        this.emergencyContactRepository.create({ ...c, employeeId: saved.id }),
+      );
+      await this.emergencyContactRepository.save(contactEntities);
     }
 
     await this.educationRepository.save(
@@ -124,7 +135,7 @@ export class EmployeesService {
     const employee = await this.findOne(id);
     const changes: { field: string; oldValue: string; newValue: string }[] = [];
 
-    const { children, ...employeeData } = dto;
+    const { children, emergencyContacts, ...employeeData } = dto;
 
     for (const [key, value] of Object.entries(employeeData)) {
       if (value !== undefined && (employee as any)[key] !== value) {
@@ -194,6 +205,16 @@ export class EmployeesService {
           this.childRepository.create({ ...c, employeeId: id }),
         );
         await this.childRepository.save(childEntities);
+      }
+    }
+
+    if (emergencyContacts !== undefined) {
+      await this.emergencyContactRepository.delete({ employeeId: id });
+      if (emergencyContacts.length) {
+        const contactEntities = emergencyContacts.map((c) =>
+          this.emergencyContactRepository.create({ ...c, employeeId: id }),
+        );
+        await this.emergencyContactRepository.save(contactEntities);
       }
     }
 

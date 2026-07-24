@@ -9,9 +9,10 @@ import { EmployeeHistory } from './entities/employee-history.entity';
 import { EmployeeEducation } from './entities/employee-education.entity';
 import { EmployeeUniform } from './entities/employee-uniform.entity';
 import { EmployeeChild } from './entities/employee-child.entity';
+import { EmployeeEmergencyContact } from './entities/employee-emergency-contact.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Employee, EmployeeStatus, EmployeeHistory, EmployeeEducation, EmployeeUniform, EmployeeChild])],
+  imports: [TypeOrmModule.forFeature([Employee, EmployeeStatus, EmployeeHistory, EmployeeEducation, EmployeeUniform, EmployeeChild, EmployeeEmergencyContact])],
   controllers: [EmployeesController, EmployeeStatusesController],
   providers: [EmployeesService],
   exports: [EmployeesService],

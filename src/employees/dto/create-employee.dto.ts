@@ -1,6 +1,7 @@
 import { IsString, IsEmail, IsOptional, IsBoolean, IsNumber, IsDateString, IsUUID, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateEmployeeChildDto } from './create-employee-child.dto';
+import { CreateEmployeeEmergencyContactDto } from './create-employee-emergency-contact.dto';
 
 export class CreateEmployeeDto {
   @IsString()
@@ -12,6 +13,26 @@ export class CreateEmployeeDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @IsOptional()
+  @IsString()
+  phoneExtension?: string;
+
+  @IsOptional()
+  @IsString()
+  corporatePhone?: string;
+
+  @IsOptional()
+  @IsString()
+  satellitePhone?: string;
+
+  @IsOptional()
+  @IsString()
+  roomPhone?: string;
+
+  @IsOptional()
+  @IsString()
+  mobilePhone?: string;
 
   @IsOptional()
   @IsString()
@@ -90,6 +111,10 @@ export class CreateEmployeeDto {
   position?: string;
 
   @IsOptional()
+  @IsString()
+  contractingCompany?: string;
+
+  @IsOptional()
   @IsDateString()
   hireDate?: string;
 
@@ -117,4 +142,10 @@ export class CreateEmployeeDto {
   @ValidateNested({ each: true })
   @Type(() => CreateEmployeeChildDto)
   children?: CreateEmployeeChildDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateEmployeeEmergencyContactDto)
+  emergencyContacts?: CreateEmployeeEmergencyContactDto[];
 }
