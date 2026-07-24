@@ -5,10 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { EmployeeStatus } from './employee-status.entity';
 import { Department } from '../../departments/entities/department.entity';
+import { EmployeeEducation } from './employee-education.entity';
+import { EmployeeUniform } from './employee-uniform.entity';
+import { EmployeeChild } from './employee-child.entity';
 
 @Entity('employees')
 export class Employee {
@@ -35,6 +39,18 @@ export class Employee {
 
   @Column({ nullable: true })
   gender: string;
+
+  @Column({ nullable: true })
+  nationality: string;
+
+  @Column({ nullable: true })
+  maritalStatus: string;
+
+  @Column({ nullable: true })
+  placeOfBirth: string;
+
+  @Column({ type: 'text', nullable: true })
+  notes: string;
 
   @ManyToOne(() => Department, { nullable: true })
   @JoinColumn({ name: 'departmentId' })
@@ -71,6 +87,15 @@ export class Employee {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => EmployeeEducation, (education) => education.employee, { cascade: true })
+  educations: EmployeeEducation[];
+
+  @OneToMany(() => EmployeeUniform, (uniform) => uniform.employee, { cascade: true })
+  uniforms: EmployeeUniform[];
+
+  @OneToMany(() => EmployeeChild, (child) => child.employee, { cascade: true })
+  children: EmployeeChild[];
 
   @CreateDateColumn()
   createdAt: Date;

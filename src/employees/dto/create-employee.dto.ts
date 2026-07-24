@@ -1,4 +1,6 @@
-import { IsString, IsEmail, IsOptional, IsBoolean, IsNumber, IsDateString, IsUUID } from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsBoolean, IsNumber, IsDateString, IsUUID, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { CreateEmployeeChildDto } from './create-employee-child.dto';
 
 export class CreateEmployeeDto {
   @IsString()
@@ -26,6 +28,58 @@ export class CreateEmployeeDto {
   @IsOptional()
   @IsString()
   gender?: string;
+
+  @IsOptional()
+  @IsString()
+  nationality?: string;
+
+  @IsOptional()
+  @IsString()
+  maritalStatus?: string;
+
+  @IsOptional()
+  @IsString()
+  placeOfBirth?: string;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
+
+  @IsOptional()
+  @IsString()
+  educationLevel?: string;
+
+  @IsOptional()
+  @IsString()
+  degree?: string;
+
+  @IsOptional()
+  @IsString()
+  institution?: string;
+
+  @IsOptional()
+  @IsString()
+  graduationYear?: string;
+
+  @IsOptional()
+  @IsString()
+  shirtSize?: string;
+
+  @IsOptional()
+  @IsString()
+  pantSize?: string;
+
+  @IsOptional()
+  @IsString()
+  shoeSize?: string;
+
+  @IsOptional()
+  @IsString()
+  jacketSize?: string;
+
+  @IsOptional()
+  @IsString()
+  helmetSize?: string;
 
   @IsOptional()
   @IsUUID()
@@ -57,4 +111,10 @@ export class CreateEmployeeDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateEmployeeChildDto)
+  children?: CreateEmployeeChildDto[];
 }

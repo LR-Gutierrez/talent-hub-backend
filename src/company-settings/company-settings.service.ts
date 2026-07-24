@@ -22,7 +22,7 @@ export class CompanySettingsService {
         id: SETTINGS_ID,
         companyName: 'My Company',
         companyLogo: '/img/logo/logo-light-full.png',
-        timezone: 'America/Asuncion',
+        timezone: 'America/Caracas',
         dateFormat: 'DD/MM/YYYY',
         currency: 'PYG',
         defaultLang: 'es',

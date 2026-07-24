@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -36,8 +37,18 @@ export class EmployeeStatusesController {
   @UseGuards(AuthGuard, PoliciesGuard)
   @Get()
   @RequireAbility('read', 'EmployeeStatus')
-  findAll() {
-    return this.statusRepository.find({ order: { name: 'ASC' } });
+  async findAll(
+    @Query('pageIndex') pageIndex?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    const take = pageSize ? parseInt(pageSize, 10) : 100;
+    const skip = ((pageIndex ? parseInt(pageIndex, 10) : 1) - 1) * take;
+    const [list, total] = await this.statusRepository.findAndCount({
+      order: { name: 'ASC' },
+      take,
+      skip,
+    });
+    return { list, total, pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1, pageSize: take };
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)

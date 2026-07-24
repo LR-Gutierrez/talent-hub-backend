@@ -12,8 +12,15 @@ export class DepartmentsService {
     private readonly departmentRepository: Repository<Department>,
   ) {}
 
-  findAll() {
-    return this.departmentRepository.find({ order: { name: 'ASC' } });
+  async findAll(params: { pageIndex: number; pageSize: number }) {
+    const { pageIndex, pageSize } = params;
+    const skip = (pageIndex - 1) * pageSize;
+    const [list, total] = await this.departmentRepository.findAndCount({
+      order: { name: 'ASC' },
+      skip,
+      take: pageSize,
+    });
+    return { list, total, pageIndex, pageSize };
   }
 
   async findOne(id: string) {

@@ -7,6 +7,7 @@ import { CaslModule } from './casl/casl.module';
 import { EmployeesModule } from './employees/employees.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { CompanySettingsModule } from './company-settings/company-settings.module';
+import { CatalogsModule } from './catalogs/catalogs.module';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -30,6 +31,7 @@ import databaseConfig from './config/database.config';
     EmployeesModule,
     DepartmentsModule,
     CompanySettingsModule,
+    CatalogsModule,
   ],
 })
 export class AppModule {}

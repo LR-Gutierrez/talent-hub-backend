@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
@@ -29,8 +30,14 @@ export class DepartmentsController {
   @UseGuards(AuthGuard, PoliciesGuard)
   @Get()
   @RequireAbility('read', 'Department')
-  findAll() {
-    return this.departmentsService.findAll();
+  async findAll(
+    @Query('pageIndex') pageIndex?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    return this.departmentsService.findAll({
+      pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1,
+      pageSize: pageSize ? parseInt(pageSize, 10) : 100,
+    });
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)

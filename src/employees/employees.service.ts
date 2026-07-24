@@ -4,6 +4,9 @@ import { Repository, ILike, FindOptionsWhere } from 'typeorm';
 import { Employee } from './entities/employee.entity';
 import { EmployeeStatus } from './entities/employee-status.entity';
 import { EmployeeHistory } from './entities/employee-history.entity';
+import { EmployeeEducation } from './entities/employee-education.entity';
+import { EmployeeUniform } from './entities/employee-uniform.entity';
+import { EmployeeChild } from './entities/employee-child.entity';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { ChangeEmployeeStatusDto } from './dto/change-employee-status.dto';
@@ -17,6 +20,12 @@ export class EmployeesService {
     private readonly statusRepository: Repository<EmployeeStatus>,
     @InjectRepository(EmployeeHistory)
     private readonly historyRepository: Repository<EmployeeHistory>,
+    @InjectRepository(EmployeeEducation)
+    private readonly educationRepository: Repository<EmployeeEducation>,
+    @InjectRepository(EmployeeUniform)
+    private readonly uniformRepository: Repository<EmployeeUniform>,
+    @InjectRepository(EmployeeChild)
+    private readonly childRepository: Repository<EmployeeChild>,
   ) {}
 
   async findAll(params: {
@@ -49,7 +58,14 @@ export class EmployeesService {
   async findOne(id: string) {
     const employee = await this.employeeRepository.findOne({
       where: { id },
-      relations: { status: true, supervisor: true, department: true },
+      relations: {
+        status: true,
+        supervisor: true,
+        department: true,
+        educations: true,
+        uniforms: true,
+        children: true,
+      },
     });
     if (!employee) throw new NotFoundException('Employee not found');
     return employee;
@@ -59,8 +75,38 @@ export class EmployeesService {
     const status = await this.statusRepository.findOneBy({ id: dto.statusId });
     if (!status) throw new NotFoundException('EmployeeStatus not found');
 
-    const employee = this.employeeRepository.create(dto);
+    const { children, ...employeeData } = dto;
+
+    const employee = this.employeeRepository.create(employeeData);
     const saved = await this.employeeRepository.save(employee);
+
+    if (children?.length) {
+      const childEntities = children.map((c) =>
+        this.childRepository.create({ ...c, employeeId: saved.id }),
+      );
+      await this.childRepository.save(childEntities);
+    }
+
+    await this.educationRepository.save(
+      this.educationRepository.create({
+        employeeId: saved.id,
+        educationLevel: dto.educationLevel,
+        degree: dto.degree,
+        institution: dto.institution,
+        graduationYear: dto.graduationYear,
+      }),
+    );
+
+    await this.uniformRepository.save(
+      this.uniformRepository.create({
+        employeeId: saved.id,
+        shirtSize: dto.shirtSize,
+        pantSize: dto.pantSize,
+        shoeSize: dto.shoeSize,
+        jacketSize: dto.jacketSize,
+        helmetSize: dto.helmetSize,
+      }),
+    );
 
     await this.historyRepository.save({
       employee: { id: saved.id } as any,
@@ -78,7 +124,9 @@ export class EmployeesService {
     const employee = await this.findOne(id);
     const changes: { field: string; oldValue: string; newValue: string }[] = [];
 
-    for (const [key, value] of Object.entries(dto)) {
+    const { children, ...employeeData } = dto;
+
+    for (const [key, value] of Object.entries(employeeData)) {
       if (value !== undefined && (employee as any)[key] !== value) {
         changes.push({
           field: key,
@@ -88,8 +136,66 @@ export class EmployeesService {
       }
     }
 
-    Object.assign(employee, dto);
+    Object.assign(employee, employeeData);
     const saved = await this.employeeRepository.save(employee);
+
+    if (dto.educationLevel !== undefined || dto.degree !== undefined || dto.institution !== undefined || dto.graduationYear !== undefined) {
+      const existingEducation = await this.educationRepository.findOneBy({ employeeId: id });
+      if (existingEducation) {
+        Object.assign(existingEducation, {
+          educationLevel: dto.educationLevel,
+          degree: dto.degree,
+          institution: dto.institution,
+          graduationYear: dto.graduationYear,
+        });
+        await this.educationRepository.save(existingEducation);
+      } else {
+        await this.educationRepository.save(
+          this.educationRepository.create({
+            employeeId: id,
+            educationLevel: dto.educationLevel,
+            degree: dto.degree,
+            institution: dto.institution,
+            graduationYear: dto.graduationYear,
+          }),
+        );
+      }
+    }
+
+    if (dto.shirtSize !== undefined || dto.pantSize !== undefined || dto.shoeSize !== undefined || dto.jacketSize !== undefined || dto.helmetSize !== undefined) {
+      const existingUniform = await this.uniformRepository.findOneBy({ employeeId: id });
+      if (existingUniform) {
+        Object.assign(existingUniform, {
+          shirtSize: dto.shirtSize,
+          pantSize: dto.pantSize,
+          shoeSize: dto.shoeSize,
+          jacketSize: dto.jacketSize,
+          helmetSize: dto.helmetSize,
+        });
+        await this.uniformRepository.save(existingUniform);
+      } else {
+        await this.uniformRepository.save(
+          this.uniformRepository.create({
+            employeeId: id,
+            shirtSize: dto.shirtSize,
+            pantSize: dto.pantSize,
+            shoeSize: dto.shoeSize,
+            jacketSize: dto.jacketSize,
+            helmetSize: dto.helmetSize,
+          }),
+        );
+      }
+    }
+
+    if (children !== undefined) {
+      await this.childRepository.delete({ employeeId: id });
+      if (children.length) {
+        const childEntities = children.map((c) =>
+          this.childRepository.create({ ...c, employeeId: id }),
+        );
+        await this.childRepository.save(childEntities);
+      }
+    }
 
     for (const change of changes) {
       await this.historyRepository.save({
@@ -136,5 +242,4 @@ export class EmployeesService {
     const employee = await this.findOne(id);
     await this.employeeRepository.remove(employee);
   }
-
 }

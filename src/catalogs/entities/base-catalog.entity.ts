@@ -1,0 +1,24 @@
+import { PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+
+export abstract class BaseCatalogEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  name: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  value: string;
+
+  @Column({ type: 'int', default: 0 })
+  sortOrder: number;
+
+  @Column({ type: 'boolean', default: true })
+  isActive: boolean;
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
+}

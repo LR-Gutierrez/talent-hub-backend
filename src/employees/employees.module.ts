@@ -6,9 +6,12 @@ import { EmployeeStatusesController } from './employee-statuses.controller';
 import { Employee } from './entities/employee.entity';
 import { EmployeeStatus } from './entities/employee-status.entity';
 import { EmployeeHistory } from './entities/employee-history.entity';
+import { EmployeeEducation } from './entities/employee-education.entity';
+import { EmployeeUniform } from './entities/employee-uniform.entity';
+import { EmployeeChild } from './entities/employee-child.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Employee, EmployeeStatus, EmployeeHistory])],
+  imports: [TypeOrmModule.forFeature([Employee, EmployeeStatus, EmployeeHistory, EmployeeEducation, EmployeeUniform, EmployeeChild])],
   controllers: [EmployeesController, EmployeeStatusesController],
   providers: [EmployeesService],
   exports: [EmployeesService],

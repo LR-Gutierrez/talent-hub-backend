@@ -23,7 +23,7 @@ export class CompanySettings {
   @Column({ nullable: true })
   companyEmail: string;
 
-  @Column({ default: 'America/Asuncion' })
+  @Column({ default: 'America/Caracas' })
   timezone: string;
 
   @Column({ default: 'DD/MM/YYYY' })
