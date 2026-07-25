@@ -24,7 +24,7 @@ export class CompanySettingsService {
         companyLogo: '/img/logo/logo-light-full.png',
         timezone: 'America/Caracas',
         dateFormat: 'DD/MM/YYYY',
-        currency: 'PYG',
+        currency: 'USD',
         defaultLang: 'es',
         favicon: '/favicon.ico',
       });

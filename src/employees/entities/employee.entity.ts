@@ -9,14 +9,16 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { EmployeeStatus } from './employee-status.entity';
-import { Department } from '../../departments/entities/department.entity';
+import { EmployeeHistory } from './employee-history.entity';
 import { EmployeeEducation } from './employee-education.entity';
 import { EmployeeUniform } from './employee-uniform.entity';
 import { EmployeeChild } from './employee-child.entity';
 import { EmployeeEmergencyContact } from './employee-emergency-contact.entity';
+import { Department } from '../../departments/entities/department.entity';
+import { Gender } from '../../catalogs/entities/gender.entity';
 import { Country } from '../../catalogs/entities/country.entity';
 import { MaritalStatus } from '../../catalogs/entities/marital-status.entity';
-import { Gender } from '../../catalogs/entities/gender.entity';
+import { BloodType } from '../../catalogs/entities/blood-type.entity';
 
 @Entity('employees')
 export class Employee {
@@ -26,7 +28,7 @@ export class Employee {
   @Column()
   fullName: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   email: string;
 
   @Column({ nullable: true })
@@ -89,6 +91,13 @@ export class Employee {
 
   @Column({ nullable: true })
   photoUrl: string;
+
+  @ManyToOne(() => BloodType, { nullable: true })
+  @JoinColumn({ name: 'bloodTypeId' })
+  bloodTypeRef: BloodType;
+
+  @Column({ nullable: true })
+  bloodTypeId: string;
 
   @ManyToOne(() => Department, { nullable: true })
   @JoinColumn({ name: 'departmentId' })

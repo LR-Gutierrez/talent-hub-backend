@@ -7,6 +7,7 @@ import { EducationLevel } from './entities/education-level.entity';
 import { EmployeeDegree } from './entities/employee-degree.entity';
 import { UniformSize } from './entities/uniform-size.entity';
 import { Country } from './entities/country.entity';
+import { BloodType } from './entities/blood-type.entity';
 
 @Injectable()
 export class CatalogsSeeder implements OnModuleInit {
@@ -17,6 +18,7 @@ export class CatalogsSeeder implements OnModuleInit {
     @InjectRepository(EmployeeDegree) private readonly degreesRepo: Repository<EmployeeDegree>,
     @InjectRepository(Country) private readonly countriesRepo: Repository<Country>,
     @InjectRepository(UniformSize) private readonly uniformSizesRepo: Repository<UniformSize>,
+    @InjectRepository(BloodType) private readonly bloodTypesRepo: Repository<BloodType>,
   ) {}
 
   async onModuleInit() {
@@ -26,6 +28,7 @@ export class CatalogsSeeder implements OnModuleInit {
     await this.seedDegrees();
     await this.seedUniformSizes();
     await this.seedCountries();
+    await this.seedBloodTypes();
   }
 
   private t = (es: string, fr: string, it: string) => ({ es, fr, it });
@@ -227,5 +230,19 @@ export class CatalogsSeeder implements OnModuleInit {
       { value: 'VN', name: 'Vietnam', dialCode: '+84', sortOrder: 63, translations: this.t('Vietnam', 'Viêt Nam', 'Vietnam') },
     ];
     await this.seedWithTranslations(this.countriesRepo, items);
+  }
+
+  private async seedBloodTypes() {
+    const items = [
+      { name: 'A+', value: 'A+', sortOrder: 1, translations: this.t('A+', 'A+', 'A+') },
+      { name: 'A-', value: 'A-', sortOrder: 2, translations: this.t('A-', 'A-', 'A-') },
+      { name: 'B+', value: 'B+', sortOrder: 3, translations: this.t('B+', 'B+', 'B+') },
+      { name: 'B-', value: 'B-', sortOrder: 4, translations: this.t('B-', 'B-', 'B-') },
+      { name: 'AB+', value: 'AB+', sortOrder: 5, translations: this.t('AB+', 'AB+', 'AB+') },
+      { name: 'AB-', value: 'AB-', sortOrder: 6, translations: this.t('AB-', 'AB-', 'AB-') },
+      { name: 'O+', value: 'O+', sortOrder: 7, translations: this.t('O+', 'O+', 'O+') },
+      { name: 'O-', value: 'O-', sortOrder: 8, translations: this.t('O-', 'O-', 'O-') },
+    ];
+    await this.seedWithTranslations(this.bloodTypesRepo, items);
   }
 }

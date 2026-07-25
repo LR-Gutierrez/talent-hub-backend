@@ -87,6 +87,7 @@ export class EmployeesService {
         placeOfBirthRef: true,
         maritalStatusRef: true,
         genderRef: true,
+        bloodTypeRef: true,
       },
     });
     if (!employee) throw new NotFoundException('Employee not found');

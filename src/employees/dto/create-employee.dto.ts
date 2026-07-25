@@ -7,8 +7,9 @@ export class CreateEmployeeDto {
   @IsString()
   fullName: string;
 
+  @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsOptional()
   @IsString()
@@ -69,6 +70,10 @@ export class CreateEmployeeDto {
   @IsOptional()
   @IsString()
   photoUrl?: string;
+
+  @IsOptional()
+  @IsUUID()
+  bloodTypeId?: string;
 
   @IsOptional()
   @IsString()

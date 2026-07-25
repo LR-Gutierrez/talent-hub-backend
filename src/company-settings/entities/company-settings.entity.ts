@@ -29,7 +29,7 @@ export class CompanySettings {
   @Column({ default: 'DD/MM/YYYY' })
   dateFormat: string;
 
-  @Column({ default: 'PYG' })
+  @Column({ default: 'USD' })
   currency: string;
 
   @Column({ default: 'es' })

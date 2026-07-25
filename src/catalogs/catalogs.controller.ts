@@ -15,6 +15,7 @@ import { EducationLevel } from './entities/education-level.entity';
 import { EmployeeDegree } from './entities/employee-degree.entity';
 import { UniformSize } from './entities/uniform-size.entity';
 import { Country } from './entities/country.entity';
+import { BloodType } from './entities/blood-type.entity';
 import { CreateCatalogDto } from './dto/create-catalog.dto';
 import { UpdateCatalogDto } from './dto/update-catalog.dto';
 
@@ -91,6 +92,11 @@ export class EmployeeDegreesController extends BaseCatalogController<EmployeeDeg
 @Controller('uniform-sizes')
 export class UniformSizesController extends BaseCatalogController<UniformSize> {
   constructor(@InjectRepository(UniformSize) repo: Repository<UniformSize>) { super(repo); }
+}
+
+@Controller('blood-types')
+export class BloodTypesController extends BaseCatalogController<BloodType> {
+  constructor(@InjectRepository(BloodType) repo: Repository<BloodType>) { super(repo); }
 }
 
 @Controller('countries')

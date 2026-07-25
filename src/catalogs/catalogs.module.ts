@@ -6,6 +6,7 @@ import { EducationLevel } from './entities/education-level.entity';
 import { EmployeeDegree } from './entities/employee-degree.entity';
 import { UniformSize } from './entities/uniform-size.entity';
 import { Country } from './entities/country.entity';
+import { BloodType } from './entities/blood-type.entity';
 import {
   GendersController,
   MaritalStatusesController,
@@ -13,6 +14,7 @@ import {
   EmployeeDegreesController,
   UniformSizesController,
   CountriesController,
+  BloodTypesController,
 } from './catalogs.controller';
 import { CatalogsSeeder } from './catalogs.seeder';
 
@@ -25,6 +27,7 @@ import { CatalogsSeeder } from './catalogs.seeder';
       EmployeeDegree,
       UniformSize,
       Country,
+      BloodType,
     ]),
   ],
   controllers: [
@@ -34,6 +37,7 @@ import { CatalogsSeeder } from './catalogs.seeder';
     EmployeeDegreesController,
     UniformSizesController,
     CountriesController,
+    BloodTypesController,
   ],
   providers: [CatalogsSeeder],
 })
