@@ -21,6 +21,7 @@ import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { ChangeEmployeeStatusDto } from './dto/change-employee-status.dto';
+import { BulkChangeEmployeeStatusDto } from './dto/bulk-change-employee-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { PoliciesGuard } from '../casl/policies.guard';
 import { RequireAbility } from '../casl/require-ability.decorator';
@@ -64,6 +65,13 @@ export class EmployeesController {
   @RequireAbility('read', 'Employee')
   getStats() {
     return this.employeesService.getStats();
+  }
+
+  @UseGuards(AuthGuard, PoliciesGuard)
+  @Patch('bulk-status')
+  @RequireAbility('update', 'Employee')
+  bulkChangeStatus(@Body() dto: BulkChangeEmployeeStatusDto, @Req() req: any) {
+    return this.employeesService.bulkChangeStatus(dto, req.user?.email);
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)

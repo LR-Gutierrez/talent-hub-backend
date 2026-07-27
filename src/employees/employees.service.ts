@@ -13,6 +13,7 @@ import { Gender } from '../catalogs/entities/gender.entity';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { ChangeEmployeeStatusDto } from './dto/change-employee-status.dto';
+import { BulkChangeEmployeeStatusDto } from './dto/bulk-change-employee-status.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -256,7 +257,7 @@ export class EmployeesService {
     if (!newStatus) throw new NotFoundException('EmployeeStatus not found');
 
     const oldStatusName = employee.status?.name ?? 'None';
-    employee.statusId = dto.statusId;
+    employee.status = newStatus;
     await this.employeeRepository.save(employee);
 
     await this.historyRepository.save({
@@ -269,6 +270,37 @@ export class EmployeesService {
     } as any);
 
     return this.findOne(employee.id);
+  }
+
+  async bulkChangeStatus(dto: BulkChangeEmployeeStatusDto, changedBy?: string) {
+    const newStatus = await this.statusRepository.findOneBy({ id: dto.statusId });
+    if (!newStatus) throw new NotFoundException('EmployeeStatus not found');
+
+    let changed = 0;
+    for (const employeeId of dto.employeeIds) {
+      const employee = await this.employeeRepository.findOne({
+        where: { id: employeeId },
+        relations: { status: true },
+      });
+      if (!employee) continue;
+
+      const oldStatusName = employee.status?.name ?? 'None';
+      employee.status = newStatus;
+      await this.employeeRepository.save(employee);
+
+      await this.historyRepository.save({
+        employee: { id: employee.id } as any,
+        changedField: 'status',
+        oldValue: oldStatusName,
+        newValue: newStatus.name,
+        changedBy: changedBy ?? null,
+        notes: dto.notes ?? 'Bulk status change',
+      } as any);
+
+      changed++;
+    }
+
+    return { changed };
   }
 
   async getHistory(employeeId: string) {
