@@ -40,5 +40,5 @@ export class EmployeeEmergencyContact {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date | null;
 }

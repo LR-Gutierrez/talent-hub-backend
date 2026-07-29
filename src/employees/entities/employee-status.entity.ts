@@ -31,5 +31,5 @@ export class EmployeeStatus {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date | null;
 }

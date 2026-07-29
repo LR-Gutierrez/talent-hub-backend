@@ -40,5 +40,5 @@ export class EmployeeChild {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date | null;
 }

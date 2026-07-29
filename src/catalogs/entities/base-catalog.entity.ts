@@ -32,7 +32,7 @@ export abstract class BaseCatalogEntity {
   updatedAt: Date;
 
   @DeleteDateColumn({ type: 'timestamptz' })
-  deletedAt: Date;
+  deletedAt: Date | null;
 
   displayName?: string;
 }

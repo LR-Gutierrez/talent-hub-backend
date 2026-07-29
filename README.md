@@ -74,8 +74,26 @@ npm run migration:generate     # Generar nueva migración
 npm run migration:run          # Ejecutar migraciones pendientes
 npm run migration:revert       # Revertir última migración
 
-npm run test                   # Tests unitarios
+npm run test                   # Tests unitarios (Jest)
+npm run test:e2e               # Tests end-to-end (requiere Docker para Testcontainers)
 ```
+
+## Tests
+
+El proyecto usa **Jest** para tests unitarios y **Testcontainers** para tests E2E.
+
+```bash
+# Tests unitarios
+npm run test
+
+# Tests E2E (requiere Docker para levantar PostgreSQL vía Testcontainers)
+npm run test:e2e
+
+# Ambos
+npm run test && npm run test:e2e
+```
+
+Los tests E2E levantan un contenedor PostgreSQL 17 Alpine automáticamente usando `@testcontainers/postgresql`.
 
 ## Migraciones
 

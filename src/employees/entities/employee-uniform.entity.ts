@@ -46,5 +46,5 @@ export class EmployeeUniform {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date | null;
 }

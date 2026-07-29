@@ -27,7 +27,9 @@ import databaseConfig from './config/database.config';
         DB_DATABASE: Joi.string().default('talent_hub'),
         JWT_SECRET: Joi.string().required(),
         PORT: Joi.number().default(3000),
-        CORS_ORIGIN: Joi.string().default('http://localhost:5173,http://localhost:3000'),
+        CORS_ORIGIN: Joi.string().default(
+          'http://localhost:5173,http://localhost:3000',
+        ),
       }),
     }),
     TypeOrmModule.forRootAsync({

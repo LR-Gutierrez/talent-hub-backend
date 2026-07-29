@@ -43,5 +43,5 @@ export class EmployeeEducation {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt: Date | null;
 }
