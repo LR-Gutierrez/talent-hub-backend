@@ -13,8 +13,8 @@ import * as bcrypt from 'bcrypt';
 
 export enum UserRole {
   ADMIN = 'admin',
-  RECRUITER = 'recruiter',
-  CANDIDATE = 'candidate',
+  SUPERVISOR = 'supervisor',
+  MONITOR = 'monitor',
 }
 
 @Entity('users')
@@ -35,7 +35,7 @@ export class User {
   @Column({ nullable: true })
   photoUrl: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.CANDIDATE })
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.MONITOR })
   role: UserRole;
 
   @Column({ default: true })

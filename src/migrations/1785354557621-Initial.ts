@@ -53,10 +53,10 @@ export class Initial1785354557621 implements MigrationInterface {
       `CREATE TABLE "employee_history" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "employeeId" uuid NOT NULL, "changedField" character varying NOT NULL, "oldValue" text, "newValue" text, "changedBy" character varying, "notes" text, "changedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_69f9bbe2842de908de4e5e097dc" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TYPE "public"."users_role_enum" AS ENUM('admin', 'recruiter', 'candidate')`,
+      `CREATE TYPE "public"."users_role_enum" AS ENUM('admin', 'supervisor', 'monitor')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "users" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying NOT NULL, "password" character varying NOT NULL, "displayName" character varying, "photoUrl" character varying, "role" "public"."users_role_enum" NOT NULL DEFAULT 'candidate', "isActive" boolean NOT NULL DEFAULT true, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "users" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying NOT NULL, "password" character varying NOT NULL, "displayName" character varying, "photoUrl" character varying, "role" "public"."users_role_enum" NOT NULL DEFAULT 'monitor', "isActive" boolean NOT NULL DEFAULT true, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `ALTER TABLE "employee_educations" ADD CONSTRAINT "FK_6b740ac8ce31f71897d3e9d4eb7" FOREIGN KEY ("employeeId") REFERENCES "employees"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,

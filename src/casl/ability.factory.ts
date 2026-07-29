@@ -17,7 +17,7 @@ export function defineAbilityFor(role: string) {
     case 'admin':
       can('manage', 'all');
       break;
-    case 'recruiter':
+    case 'supervisor':
       can('read', 'User');
       can('create', 'User');
       can('update', 'User');
@@ -27,7 +27,7 @@ export function defineAbilityFor(role: string) {
       can('read', 'EmployeeStatus');
       can('read', 'Department');
       break;
-    case 'candidate':
+    case 'monitor':
       can('read', 'User');
       can('update', 'User');
       cannot('create', 'User');
