@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -13,13 +17,18 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findAll(params: { pageIndex: number; pageSize: number; query: string; sortKey?: string; sortOrder?: string; withDeleted?: boolean }) {
-    const { pageIndex, pageSize, query, sortKey, sortOrder, withDeleted } = params;
+  async findAll(params: {
+    pageIndex: number;
+    pageSize: number;
+    query: string;
+    sortKey?: string;
+    sortOrder?: string;
+    withDeleted?: boolean;
+  }) {
+    const { pageIndex, pageSize, query, sortKey, sortOrder, withDeleted } =
+      params;
     const where = query
-      ? [
-          { displayName: ILike(`%${query}%`) },
-          { email: ILike(`%${query}%`) },
-        ]
+      ? [{ displayName: ILike(`%${query}%`) }, { email: ILike(`%${query}%`) }]
       : {};
     const order = sortKey && sortOrder ? { [sortKey]: sortOrder } : {};
     const [list, total] = await this.usersRepository.findAndCount({
@@ -33,7 +42,10 @@ export class UsersService {
   }
 
   async findOne(id: string, withDeleted = false) {
-    const user = await this.usersRepository.findOne({ where: { id }, withDeleted });
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      withDeleted,
+    });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
@@ -68,7 +80,10 @@ export class UsersService {
   }
 
   async restore(id: string) {
-    const user = await this.usersRepository.findOne({ where: { id }, withDeleted: true });
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
     if (!user) throw new NotFoundException('User not found');
     return this.usersRepository.restore(user.id);
   }

@@ -21,7 +21,9 @@ import { RequireAbility } from '../casl/require-ability.decorator';
 
 @Controller('employees')
 export class EmployeesImportExportController {
-  constructor(private readonly importExportService: EmployeesImportExportService) {}
+  constructor(
+    private readonly importExportService: EmployeesImportExportService,
+  ) {}
 
   @UseGuards(AuthGuard, PoliciesGuard)
   @Get('export/excel')
@@ -29,8 +31,10 @@ export class EmployeesImportExportController {
   async exportExcel(@Res() res: Response) {
     const buffer = await this.importExportService.exportToExcel();
     res.set({
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': 'attachment; filename=employees.xlsx',
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition':
+        'attachment; filename=TalentHub_Employee_Directory.xlsx',
     });
     res.end(buffer);
   }
@@ -41,8 +45,10 @@ export class EmployeesImportExportController {
   async downloadTemplate(@Res() res: Response) {
     const buffer = await this.importExportService.generateTemplate();
     res.set({
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': 'attachment; filename=employees_import_template.xlsx',
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition':
+        'attachment; filename=employees_import_template.xlsx',
     });
     res.end(buffer);
   }
@@ -78,12 +84,17 @@ export class EmployeesImportExportController {
   async importExcel(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: any,
-    @Body() body: { autoCreateDepartments?: string; autoCreateBloodTypes?: string },
+    @Body()
+    body: { autoCreateDepartments?: string; autoCreateBloodTypes?: string },
   ) {
     try {
       const fileBuffer = fs.readFileSync(file.path);
-      const autoCreateDepartments = body.autoCreateDepartments ? JSON.parse(body.autoCreateDepartments) : undefined;
-      const autoCreateBloodTypes = body.autoCreateBloodTypes ? JSON.parse(body.autoCreateBloodTypes) : undefined;
+      const autoCreateDepartments = body.autoCreateDepartments
+        ? JSON.parse(body.autoCreateDepartments)
+        : undefined;
+      const autoCreateBloodTypes = body.autoCreateBloodTypes
+        ? JSON.parse(body.autoCreateBloodTypes)
+        : undefined;
       const result = await this.importExportService.importFromExcel(
         fileBuffer,
         req.user?.email,
@@ -91,11 +102,15 @@ export class EmployeesImportExportController {
         autoCreateBloodTypes,
       );
 
-      try { fs.unlinkSync(file.path); } catch {}
+      try {
+        fs.unlinkSync(file.path);
+      } catch {}
 
       return result;
     } catch (err) {
-      try { fs.unlinkSync(file.path); } catch {}
+      try {
+        fs.unlinkSync(file.path);
+      } catch {}
       throw err;
     }
   }
@@ -128,18 +143,21 @@ export class EmployeesImportExportController {
       },
     }),
   )
-  async previewExcel(
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  async previewExcel(@UploadedFile() file: Express.Multer.File) {
     try {
       const fileBuffer = fs.readFileSync(file.path);
-      const result = await this.importExportService.previewFromExcel(fileBuffer);
+      const result =
+        await this.importExportService.previewFromExcel(fileBuffer);
 
-      try { fs.unlinkSync(file.path); } catch {}
+      try {
+        fs.unlinkSync(file.path);
+      } catch {}
 
       return result;
     } catch (err) {
-      try { fs.unlinkSync(file.path); } catch {}
+      try {
+        fs.unlinkSync(file.path);
+      } catch {}
       throw err;
     }
   }

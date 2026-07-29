@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, ILike } from 'typeorm';
 import { Department } from './entities/department.entity';
@@ -19,7 +24,12 @@ export class DepartmentsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async findAll(params: { pageIndex: number; pageSize: number; query?: string; withDeleted?: boolean }) {
+  async findAll(params: {
+    pageIndex: number;
+    pageSize: number;
+    query?: string;
+    withDeleted?: boolean;
+  }) {
     const { pageIndex, pageSize, query, withDeleted } = params;
     const skip = (pageIndex - 1) * pageSize;
     const where = query ? { name: ILike(`%${query}%`) } : {};
@@ -34,7 +44,10 @@ export class DepartmentsService {
   }
 
   async findOne(id: string, withDeleted = false) {
-    const dept = await this.departmentRepository.findOne({ where: { id }, withDeleted });
+    const dept = await this.departmentRepository.findOne({
+      where: { id },
+      withDeleted,
+    });
     if (!dept) throw new NotFoundException('Department not found');
     return dept;
   }
@@ -45,14 +58,22 @@ export class DepartmentsService {
     return this.departmentRepository.save(dept);
   }
 
-  private async ensureUniqueName(name: string, excludeId?: string, manager?: any) {
-    const repo = manager ? manager.getRepository(Department) : this.departmentRepository;
+  private async ensureUniqueName(
+    name: string,
+    excludeId?: string,
+    manager?: any,
+  ) {
+    const repo = manager
+      ? manager.getRepository(Department)
+      : this.departmentRepository;
     const existing = await repo.findOne({
       where: { name: ILike(name.trim()) },
       withDeleted: true,
     });
     if (existing && existing.id !== excludeId) {
-      throw new BadRequestException(`A department with the name "${name.trim()}" already exists.`);
+      throw new BadRequestException(
+        `A department with the name "${name.trim()}" already exists.`,
+      );
     }
   }
 
@@ -67,9 +88,17 @@ export class DepartmentsService {
     return this.employeeRepository.count({ where: { departmentId: id } });
   }
 
-  async remove(id: string, changedBy?: string, force?: boolean, targetDepartmentId?: string, newDepartmentName?: string) {
+  async remove(
+    id: string,
+    changedBy?: string,
+    force?: boolean,
+    targetDepartmentId?: string,
+    newDepartmentName?: string,
+  ) {
     const origDept = await this.findOne(id);
-    const employeeCount = await this.employeeRepository.count({ where: { departmentId: id } });
+    const employeeCount = await this.employeeRepository.count({
+      where: { departmentId: id },
+    });
 
     if (employeeCount > 0 && !force) {
       throw new ConflictException({
@@ -94,19 +123,30 @@ export class DepartmentsService {
       if (newDepartmentName) {
         const trimmedName = newDepartmentName.trim();
         await this.ensureUniqueName(trimmedName, undefined, manager);
-        const created = manager.create(Department, { name: trimmedName, isActive: true });
+        const created = manager.create(Department, {
+          name: trimmedName,
+          isActive: true,
+        });
         const saved = await manager.save(Department, created);
         actualTargetId = saved.id;
         targetDeptName = saved.name;
       } else {
-        const targetDept = await manager.findOne(Department, { where: { id: targetDepartmentId } });
-        if (!targetDept) throw new NotFoundException('Target department not found');
-        if (targetDept.id === id) throw new BadRequestException('Cannot reassign employees to the same department');
+        const targetDept = await manager.findOne(Department, {
+          where: { id: targetDepartmentId },
+        });
+        if (!targetDept)
+          throw new NotFoundException('Target department not found');
+        if (targetDept.id === id)
+          throw new BadRequestException(
+            'Cannot reassign employees to the same department',
+          );
         actualTargetId = targetDepartmentId!;
         targetDeptName = targetDept.name;
       }
 
-      const employees = await manager.find(Employee, { where: { departmentId: id } });
+      const employees = await manager.find(Employee, {
+        where: { departmentId: id },
+      });
       for (const employee of employees) {
         employee.departmentId = actualTargetId;
         await manager.save(Employee, employee);
@@ -124,12 +164,18 @@ export class DepartmentsService {
 
       await manager.softRemove(dept);
 
-      return { movedCount: employeeCount, targetDepartmentName: targetDeptName };
+      return {
+        movedCount: employeeCount,
+        targetDepartmentName: targetDeptName,
+      };
     });
   }
 
   async restore(id: string) {
-    const dept = await this.departmentRepository.findOne({ where: { id }, withDeleted: true });
+    const dept = await this.departmentRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
     if (!dept) throw new NotFoundException('Department not found');
     return this.departmentRepository.restore(dept.id);
   }

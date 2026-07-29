@@ -93,14 +93,22 @@ export class EmployeesController {
   @UseGuards(AuthGuard, PoliciesGuard)
   @Patch(':id')
   @RequireAbility('update', 'Employee')
-  update(@Param('id') id: string, @Body() dto: UpdateEmployeeDto, @Req() req: any) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateEmployeeDto,
+    @Req() req: any,
+  ) {
     return this.employeesService.update(id, dto, req.user?.email);
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)
   @Patch(':id/status')
   @RequireAbility('update', 'Employee')
-  changeStatus(@Param('id') id: string, @Body() dto: ChangeEmployeeStatusDto, @Req() req: any) {
+  changeStatus(
+    @Param('id') id: string,
+    @Body() dto: ChangeEmployeeStatusDto,
+    @Req() req: any,
+  ) {
     return this.employeesService.changeStatus(id, dto, req.user?.email);
   }
 
@@ -131,7 +139,14 @@ export class EmployeesController {
     if (!employee) throw new NotFoundException('Employee not found');
 
     if (employee.photoUrl) {
-      const oldPath = join(__dirname, '..', '..', 'uploads', 'employees', employee.photoUrl.split('/').pop()!);
+      const oldPath = join(
+        __dirname,
+        '..',
+        '..',
+        'uploads',
+        'employees',
+        employee.photoUrl.split('/').pop()!,
+      );
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
 

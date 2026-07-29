@@ -77,7 +77,13 @@ export class DepartmentsController {
     @Query('targetDepartmentId') targetDepartmentId?: string,
     @Query('newDepartmentName') newDepartmentName?: string,
   ) {
-    return this.departmentsService.remove(id, req.user?.email, force === 'true', targetDepartmentId, newDepartmentName);
+    return this.departmentsService.remove(
+      id,
+      req.user?.email,
+      force === 'true',
+      targetDepartmentId,
+      newDepartmentName,
+    );
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)

@@ -15,71 +15,159 @@ import { Country } from '../catalogs/entities/country.entity';
 import { MaritalStatus } from '../catalogs/entities/marital-status.entity';
 import { BloodType } from '../catalogs/entities/blood-type.entity';
 
-const COLUMNS: { header: string; key: string; width: number }[] = [
-  { header: 'Full Name', key: 'fullName', width: 30 },
-  { header: 'Email', key: 'email', width: 30 },
-  { header: 'Phone', key: 'phone', width: 18 },
-  { header: 'Phone Extension', key: 'phoneExtension', width: 15 },
-  { header: 'Corporate Phone', key: 'corporatePhone', width: 18 },
-  { header: 'Satellite Phone', key: 'satellitePhone', width: 18 },
-  { header: 'Room Phone', key: 'roomPhone', width: 15 },
-  { header: 'Mobile Phone', key: 'mobilePhone', width: 18 },
-  { header: 'Address', key: 'address', width: 35 },
-  { header: 'Birth Date', key: 'birthDate', width: 15 },
-  { header: 'Document ID', key: 'documentId', width: 20 },
-  { header: 'Gender', key: 'gender', width: 15 },
-  { header: 'Nationality', key: 'nationality', width: 20 },
-  { header: 'Marital Status', key: 'maritalStatus', width: 18 },
-  { header: 'Place of Birth', key: 'placeOfBirth', width: 20 },
-  { header: 'Department', key: 'department', width: 25 },
-  { header: 'Position', key: 'position', width: 25 },
-  { header: 'Contracting Company', key: 'contractingCompany', width: 25 },
-  { header: 'Hire Date', key: 'hireDate', width: 15 },
-  { header: 'End Date', key: 'endDate', width: 15 },
-  { header: 'Salary', key: 'salary', width: 15 },
-  { header: 'Supervisor', key: 'supervisor', width: 30 },
-  { header: 'Status', key: 'status', width: 20 },
-  { header: 'Is Active', key: 'isActive', width: 12 },
-  { header: 'Education Level', key: 'educationLevel', width: 20 },
-  { header: 'Degree', key: 'degree', width: 25 },
-  { header: 'Institution', key: 'institution', width: 30 },
-  { header: 'Graduation Year', key: 'graduationYear', width: 15 },
-  { header: 'Shirt Size', key: 'shirtSize', width: 12 },
-  { header: 'Pant Size', key: 'pantSize', width: 12 },
-  { header: 'Shoe Size', key: 'shoeSize', width: 12 },
-  { header: 'Jacket Size', key: 'jacketSize', width: 12 },
-  { header: 'Helmet Size', key: 'helmetSize', width: 12 },
-  { header: 'Photo URL', key: 'photoUrl', width: 20 },
-  { header: 'Blood Type', key: 'bloodType', width: 12 },
-  { header: 'Notes', key: 'notes', width: 40 },
-  { header: 'Child 1 Name', key: 'child1Name', width: 25 },
-  { header: 'Child 1 Birth Date', key: 'child1BirthDate', width: 18 },
-  { header: 'Child 1 Gender', key: 'child1Gender', width: 15 },
-  { header: 'Child 2 Name', key: 'child2Name', width: 25 },
-  { header: 'Child 2 Birth Date', key: 'child2BirthDate', width: 18 },
-  { header: 'Child 2 Gender', key: 'child2Gender', width: 15 },
-  { header: 'Emergency Contact Name', key: 'emergencyContactName', width: 25 },
+interface ColumnGroup {
+  label: string;
+  color: string;
+  columns: { header: string; key: string; width: number }[];
+}
+
+const GROUPS: ColumnGroup[] = [
   {
-    header: 'Emergency Contact Phone',
-    key: 'emergencyContactPhone',
-    width: 20,
+    label: 'Personal Info',
+    color: 'FF2563EB',
+    columns: [
+      { header: 'Full Name', key: 'fullName', width: 30 },
+      { header: 'Email', key: 'email', width: 30 },
+      { header: 'Phone', key: 'phone', width: 18 },
+      { header: 'Phone Extension', key: 'phoneExtension', width: 15 },
+      { header: 'Corporate Phone', key: 'corporatePhone', width: 18 },
+      { header: 'Satellite Phone', key: 'satellitePhone', width: 18 },
+      { header: 'Room Phone', key: 'roomPhone', width: 15 },
+      { header: 'Mobile Phone', key: 'mobilePhone', width: 18 },
+      { header: 'Address', key: 'address', width: 35 },
+      { header: 'Birth Date', key: 'birthDate', width: 15 },
+      { header: 'Document ID', key: 'documentId', width: 20 },
+      { header: 'Gender', key: 'gender', width: 15 },
+      { header: 'Nationality', key: 'nationality', width: 20 },
+      { header: 'Marital Status', key: 'maritalStatus', width: 18 },
+      { header: 'Place of Birth', key: 'placeOfBirth', width: 20 },
+      { header: 'Blood Type', key: 'bloodType', width: 12 },
+      { header: 'Notes', key: 'notes', width: 40 },
+    ],
   },
   {
-    header: 'Emergency Contact Relationship',
-    key: 'emergencyContactRelationship',
-    width: 25,
+    label: 'Labor Info',
+    color: 'FF059669',
+    columns: [
+      { header: 'Department', key: 'department', width: 25 },
+      { header: 'Position', key: 'position', width: 25 },
+      { header: 'Contracting Company', key: 'contractingCompany', width: 25 },
+      { header: 'Hire Date', key: 'hireDate', width: 15 },
+      { header: 'End Date', key: 'endDate', width: 15 },
+      { header: 'Salary', key: 'salary', width: 15 },
+      { header: 'Supervisor', key: 'supervisor', width: 30 },
+      { header: 'Status', key: 'status', width: 20 },
+      { header: 'Is Active', key: 'isActive', width: 12 },
+    ],
+  },
+  {
+    label: 'Education',
+    color: 'FF7C3AED',
+    columns: [
+      { header: 'Education Level', key: 'educationLevel', width: 20 },
+      { header: 'Degree', key: 'degree', width: 25 },
+      { header: 'Institution', key: 'institution', width: 30 },
+      { header: 'Graduation Year', key: 'graduationYear', width: 15 },
+    ],
+  },
+  {
+    label: 'Uniform',
+    color: 'FFF59E0B',
+    columns: [
+      { header: 'Shirt Size', key: 'shirtSize', width: 12 },
+      { header: 'Pant Size', key: 'pantSize', width: 12 },
+      { header: 'Shoe Size', key: 'shoeSize', width: 12 },
+      { header: 'Jacket Size', key: 'jacketSize', width: 12 },
+      { header: 'Helmet Size', key: 'helmetSize', width: 12 },
+    ],
+  },
+  {
+    label: 'Children',
+    color: 'FFDC2626',
+    columns: [
+      { header: 'Child 1 Name', key: 'child1Name', width: 25 },
+      { header: 'Child 1 Birth Date', key: 'child1BirthDate', width: 18 },
+      { header: 'Child 1 Gender', key: 'child1Gender', width: 15 },
+      { header: 'Child 2 Name', key: 'child2Name', width: 25 },
+      { header: 'Child 2 Birth Date', key: 'child2BirthDate', width: 18 },
+      { header: 'Child 2 Gender', key: 'child2Gender', width: 15 },
+    ],
+  },
+  {
+    label: 'Emergency Contacts',
+    color: 'FF0891B2',
+    columns: [
+      {
+        header: 'Emergency Contact Name',
+        key: 'emergencyContactName',
+        width: 25,
+      },
+      {
+        header: 'Emergency Contact Phone',
+        key: 'emergencyContactPhone',
+        width: 20,
+      },
+      {
+        header: 'Emergency Contact Relationship',
+        key: 'emergencyContactRelationship',
+        width: 25,
+      },
+    ],
   },
 ];
 
-function styleHeaderRow(row: ExcelJS.Row) {
-  row.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-  row.fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'FF2563EB' },
-  };
-  row.alignment = { horizontal: 'center' };
+const ALL_COLUMNS = GROUPS.flatMap((g) => g.columns);
+
+const EXCLUDED_LABELS = new Set([
+  'Education',
+  'Children',
+  'Emergency Contacts',
+]);
+const MAIN_GROUPS = GROUPS.filter((g) => !EXCLUDED_LABELS.has(g.label));
+const MAIN_COLUMNS = MAIN_GROUPS.flatMap((g) => g.columns);
+
+const EDUCATION_COLUMNS = [
+  { header: 'Employee Name', key: 'employeeName', width: 30 },
+  { header: 'Education Level', key: 'educationLevel', width: 20 },
+  { header: 'Degree', key: 'degree', width: 25 },
+  { header: 'Institution', key: 'institution', width: 30 },
+  { header: 'Graduation Year', key: 'graduationYear', width: 18 },
+];
+
+const CHILD_COLUMNS = [
+  { header: 'Employee Name', key: 'employeeName', width: 30 },
+  { header: 'Child Name', key: 'childName', width: 25 },
+  { header: 'Birth Date', key: 'birthDate', width: 18 },
+  { header: 'Gender', key: 'gender', width: 15 },
+];
+
+const CONTACT_COLUMNS = [
+  { header: 'Employee Name', key: 'employeeName', width: 30 },
+  { header: 'Contact Name', key: 'contactName', width: 25 },
+  { header: 'Phone', key: 'phone', width: 20 },
+  { header: 'Relationship', key: 'relationship', width: 25 },
+];
+
+const THIN_BORDER: Partial<ExcelJS.Borders> = {
+  top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+  bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+  left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+  right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+};
+
+function styleHeaderRow(row: ExcelJS.Row, columnCount: number) {
   row.height = 22;
+  for (let c = 1; c <= columnCount; c++) {
+    const cell = row.getCell(c);
+    cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF1E293B' },
+    };
+    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+    cell.border = THIN_BORDER;
+  }
 }
 
 function cellToString(value: ExcelJS.CellValue): string {
@@ -169,21 +257,43 @@ export class EmployeesImportExportService {
 
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'TalentHub';
+    workbook.title = 'TalentHub - Employee Directory';
     workbook.created = new Date();
 
-    const sheet = workbook.addWorksheet('Employees', {
-      views: [{ state: 'frozen', ySplit: 1 }],
+    const sheet = workbook.addWorksheet('Employee Directory', {
+      views: [{ state: 'frozen', ySplit: 2, showGridLines: false }],
     });
 
-    sheet.columns = COLUMNS;
-    styleHeaderRow(sheet.getRow(1));
+    sheet.columns = MAIN_COLUMNS;
+
+    let colIndex = 1;
+    for (const group of MAIN_GROUPS) {
+      const endCol = colIndex + group.columns.length - 1;
+      const cell = sheet.getCell(1, colIndex);
+      cell.value = group.label;
+      if (group.columns.length > 1) {
+        sheet.mergeCells(1, colIndex, 1, endCol);
+      }
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: group.color },
+      };
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      cell.border = THIN_BORDER;
+      colIndex = endCol + 1;
+    }
+    sheet.getRow(1).height = 26;
+
+    for (let c = 1; c <= MAIN_COLUMNS.length; c++) {
+      const cell = sheet.getCell(2, c);
+      cell.value = MAIN_COLUMNS[c - 1].header;
+    }
+    styleHeaderRow(sheet.getRow(2), MAIN_COLUMNS.length);
 
     for (const emp of employees) {
-      const education = emp.educations?.[0];
       const uniform = emp.uniforms?.[0];
-      const child1 = emp.children?.[0];
-      const child2 = emp.children?.[1];
-      const emergency = emp.emergencyContacts?.[0];
 
       sheet.addRow({
         fullName: emp.fullName,
@@ -201,6 +311,8 @@ export class EmployeesImportExportService {
         nationality: emp.nationalityRef?.name || '',
         maritalStatus: emp.maritalStatusRef?.name || '',
         placeOfBirth: emp.placeOfBirthRef?.name || '',
+        bloodType: emp.bloodTypeRef?.name || '',
+        notes: emp.notes || '',
         department: emp.department?.name || '',
         position: emp.position || '',
         contractingCompany: emp.contractingCompany || '',
@@ -210,34 +322,142 @@ export class EmployeesImportExportService {
         supervisor: emp.supervisor?.fullName || '',
         status: emp.status?.name || '',
         isActive: emp.isActive ? 'Yes' : 'No',
-        educationLevel: education?.educationLevel || '',
-        degree: education?.degree || '',
-        institution: education?.institution || '',
-        graduationYear: education?.graduationYear || '',
         shirtSize: uniform?.shirtSize || '',
         pantSize: uniform?.pantSize || '',
         shoeSize: uniform?.shoeSize || '',
         jacketSize: uniform?.jacketSize || '',
         helmetSize: uniform?.helmetSize || '',
-        notes: emp.notes || '',
-        photoUrl: emp.photoUrl || '',
-        bloodType: emp.bloodTypeRef?.name || '',
-        child1Name: child1?.name || '',
-        child1BirthDate: child1?.birthDate || '',
-        child1Gender: child1?.gender || '',
-        child2Name: child2?.name || '',
-        child2BirthDate: child2?.birthDate || '',
-        child2Gender: child2?.gender || '',
-        emergencyContactName: emergency?.name || '',
-        emergencyContactPhone: emergency?.phone || '',
-        emergencyContactRelationship: emergency?.relationship || '',
       });
     }
 
+    const rowCount = sheet.rowCount;
+    for (let r = 3; r <= rowCount; r++) {
+      const row = sheet.getRow(r);
+      const isEven = r % 2 === 0;
+      for (let c = 1; c <= MAIN_COLUMNS.length; c++) {
+        const cell = row.getCell(c);
+        cell.border = THIN_BORDER;
+        cell.alignment = { vertical: 'middle', wrapText: true };
+        if (isEven) {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF8FAFC' },
+          };
+        }
+      }
+    }
+
     sheet.autoFilter = {
-      from: { row: 1, column: 1 },
-      to: { row: 1, column: COLUMNS.length },
+      from: { row: 2, column: 1 },
+      to: { row: 2, column: MAIN_COLUMNS.length },
     };
+
+    const eduSheet = workbook.addWorksheet('Education', {
+      views: [{ state: 'frozen', ySplit: 1, showGridLines: false }],
+    });
+    eduSheet.columns = EDUCATION_COLUMNS;
+    styleHeaderRow(eduSheet.getRow(1), EDUCATION_COLUMNS.length);
+
+    for (const emp of employees) {
+      for (const edu of emp.educations ?? []) {
+        eduSheet.addRow({
+          employeeName: emp.fullName,
+          educationLevel: edu.educationLevel || '',
+          degree: edu.degree || '',
+          institution: edu.institution || '',
+          graduationYear: edu.graduationYear || '',
+        });
+      }
+    }
+
+    const eduDataRowCount = eduSheet.rowCount;
+    for (let r = 2; r <= eduDataRowCount; r++) {
+      const row = eduSheet.getRow(r);
+      const isEven = r % 2 === 0;
+      for (let c = 1; c <= EDUCATION_COLUMNS.length; c++) {
+        const cell = row.getCell(c);
+        cell.border = THIN_BORDER;
+        cell.alignment = { vertical: 'middle' };
+        if (isEven) {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF8FAFC' },
+          };
+        }
+      }
+    }
+
+    const childSheet = workbook.addWorksheet('Children', {
+      views: [{ state: 'frozen', ySplit: 1, showGridLines: false }],
+    });
+    childSheet.columns = CHILD_COLUMNS;
+    styleHeaderRow(childSheet.getRow(1), CHILD_COLUMNS.length);
+
+    for (const emp of employees) {
+      for (const child of emp.children ?? []) {
+        childSheet.addRow({
+          employeeName: emp.fullName,
+          childName: child.name || '',
+          birthDate: child.birthDate || '',
+          gender: child.gender || '',
+        });
+      }
+    }
+
+    const childDataRowCount = childSheet.rowCount;
+    for (let r = 2; r <= childDataRowCount; r++) {
+      const row = childSheet.getRow(r);
+      const isEven = r % 2 === 0;
+      for (let c = 1; c <= CHILD_COLUMNS.length; c++) {
+        const cell = row.getCell(c);
+        cell.border = THIN_BORDER;
+        cell.alignment = { vertical: 'middle' };
+        if (isEven) {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF8FAFC' },
+          };
+        }
+      }
+    }
+
+    const contactSheet = workbook.addWorksheet('Emergency Contacts', {
+      views: [{ state: 'frozen', ySplit: 1, showGridLines: false }],
+    });
+    contactSheet.columns = CONTACT_COLUMNS;
+    styleHeaderRow(contactSheet.getRow(1), CONTACT_COLUMNS.length);
+
+    for (const emp of employees) {
+      for (const contact of emp.emergencyContacts ?? []) {
+        contactSheet.addRow({
+          employeeName: emp.fullName,
+          contactName: contact.name || '',
+          phone: contact.phone || '',
+          relationship: contact.relationship || '',
+        });
+      }
+    }
+
+    const contactDataRowCount = contactSheet.rowCount;
+    for (let r = 2; r <= contactDataRowCount; r++) {
+      const row = contactSheet.getRow(r);
+      const isEven = r % 2 === 0;
+      for (let c = 1; c <= CONTACT_COLUMNS.length; c++) {
+        const cell = row.getCell(c);
+        cell.border = THIN_BORDER;
+        cell.alignment = { vertical: 'middle' };
+        if (isEven) {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF8FAFC' },
+          };
+        }
+      }
+    }
 
     const buffer = await workbook.xlsx.writeBuffer();
     return Buffer.from(buffer);
@@ -249,11 +469,11 @@ export class EmployeesImportExportService {
     workbook.created = new Date();
 
     const sheet = workbook.addWorksheet('Employees', {
-      views: [{ state: 'frozen', ySplit: 1 }],
+      views: [{ state: 'frozen', ySplit: 1, showGridLines: false }],
     });
 
-    sheet.columns = COLUMNS;
-    styleHeaderRow(sheet.getRow(1));
+    sheet.columns = ALL_COLUMNS;
+    styleHeaderRow(sheet.getRow(1), ALL_COLUMNS.length);
 
     sheet.addRow({
       fullName: 'John Doe',
@@ -300,6 +520,14 @@ export class EmployeesImportExportService {
       emergencyContactPhone: '555-0102',
       emergencyContactRelationship: 'Spouse',
     });
+
+    const rowCount = sheet.rowCount;
+    for (let r = 2; r <= rowCount; r++) {
+      const row = sheet.getRow(r);
+      for (let c = 1; c <= ALL_COLUMNS.length; c++) {
+        row.getCell(c).border = THIN_BORDER;
+      }
+    }
 
     const buffer = await workbook.xlsx.writeBuffer();
     return Buffer.from(buffer);
@@ -484,7 +712,7 @@ export class EmployeesImportExportService {
     headerRow.eachCell((cell, colNumber) => {
       const raw = cellToString(cell.value).trim();
       const lower = raw.toLowerCase().trim();
-      const colDef = COLUMNS.find((c) => c.header.toLowerCase() === lower);
+      const colDef = ALL_COLUMNS.find((c) => c.header.toLowerCase() === lower);
       if (colDef) {
         columnKeys[colNumber] = colDef.key;
       } else if (ALIAS_MAP[lower]) {
@@ -537,7 +765,7 @@ export class EmployeesImportExportService {
         };
 
         const fullName = normalizeFullName(getVal('fullName'));
-        let email = getVal('email');
+        const email = getVal('email');
 
         if (!fullName) {
           errors.push({ row: i, message: 'Full Name is required' });
@@ -594,7 +822,9 @@ export class EmployeesImportExportService {
           : undefined;
 
         const isActiveStr = getVal('isActive');
-        const isActive = isActiveStr ? isActiveStr.toLowerCase() !== 'no' : true;
+        const isActive = isActiveStr
+          ? isActiveStr.toLowerCase() !== 'no'
+          : true;
         const salaryStr = getVal('salary');
         const salary = salaryStr ? parseFloat(salaryStr) : undefined;
 
@@ -634,13 +864,16 @@ export class EmployeesImportExportService {
         const institution = getVal('institution');
         const graduationYear = getVal('graduationYear');
         if (educationLevel || degree || institution || graduationYear) {
-          await manager.save(EmployeeEducation, manager.create(EmployeeEducation, {
-            employeeId: saved.id,
-            educationLevel: educationLevel || undefined,
-            degree: degree || undefined,
-            institution: institution || undefined,
-            graduationYear: graduationYear || undefined,
-          }));
+          await manager.save(
+            EmployeeEducation,
+            manager.create(EmployeeEducation, {
+              employeeId: saved.id,
+              educationLevel: educationLevel || undefined,
+              degree: degree || undefined,
+              institution: institution || undefined,
+              graduationYear: graduationYear || undefined,
+            }),
+          );
         }
 
         const shirtSize = getVal('shirtSize');
@@ -649,63 +882,83 @@ export class EmployeesImportExportService {
         const jacketSize = getVal('jacketSize');
         const helmetSize = getVal('helmetSize');
         if (shirtSize || pantSize || shoeSize || jacketSize || helmetSize) {
-          await manager.save(EmployeeUniform, manager.create(EmployeeUniform, {
-            employeeId: saved.id,
-            shirtSize: shirtSize || undefined,
-            pantSize: pantSize || undefined,
-            shoeSize: shoeSize || undefined,
-            jacketSize: jacketSize || undefined,
-            helmetSize: helmetSize || undefined,
-          }));
+          await manager.save(
+            EmployeeUniform,
+            manager.create(EmployeeUniform, {
+              employeeId: saved.id,
+              shirtSize: shirtSize || undefined,
+              pantSize: pantSize || undefined,
+              shoeSize: shoeSize || undefined,
+              jacketSize: jacketSize || undefined,
+              helmetSize: helmetSize || undefined,
+            }),
+          );
         }
 
         const child1Name = getVal('child1Name');
         if (child1Name) {
-          await manager.save(EmployeeChild, manager.create(EmployeeChild, {
-            employeeId: saved.id,
-            name: child1Name,
-            birthDate: getVal('child1BirthDate') || undefined,
-            gender: getVal('child1Gender') || undefined,
-          }));
+          await manager.save(
+            EmployeeChild,
+            manager.create(EmployeeChild, {
+              employeeId: saved.id,
+              name: child1Name,
+              birthDate: getVal('child1BirthDate') || undefined,
+              gender: getVal('child1Gender') || undefined,
+            }),
+          );
         }
         const child2Name = getVal('child2Name');
         if (child2Name) {
-          await manager.save(EmployeeChild, manager.create(EmployeeChild, {
-            employeeId: saved.id,
-            name: child2Name,
-            birthDate: getVal('child2BirthDate') || undefined,
-            gender: getVal('child2Gender') || undefined,
-          }));
+          await manager.save(
+            EmployeeChild,
+            manager.create(EmployeeChild, {
+              employeeId: saved.id,
+              name: child2Name,
+              birthDate: getVal('child2BirthDate') || undefined,
+              gender: getVal('child2Gender') || undefined,
+            }),
+          );
         }
 
         const emergencyName = getVal('emergencyContactName');
         if (emergencyName) {
-          await manager.save(EmployeeEmergencyContact, manager.create(EmployeeEmergencyContact, {
-            employeeId: saved.id,
-            name: emergencyName,
-            phone: getVal('emergencyContactPhone') || undefined,
-            relationship: getVal('emergencyContactRelationship') || undefined,
-          }));
+          await manager.save(
+            EmployeeEmergencyContact,
+            manager.create(EmployeeEmergencyContact, {
+              employeeId: saved.id,
+              name: emergencyName,
+              phone: getVal('emergencyContactPhone') || undefined,
+              relationship: getVal('emergencyContactRelationship') || undefined,
+            }),
+          );
         }
 
         const emergencyName2 = getVal('emergencyContactName2');
         if (emergencyName2) {
-          await manager.save(EmployeeEmergencyContact, manager.create(EmployeeEmergencyContact, {
-            employeeId: saved.id,
-            name: emergencyName2,
-            phone: getVal('emergencyContactPhone2') || undefined,
-            relationship: getVal('emergencyContactRelationship2') || undefined,
-          }));
+          await manager.save(
+            EmployeeEmergencyContact,
+            manager.create(EmployeeEmergencyContact, {
+              employeeId: saved.id,
+              name: emergencyName2,
+              phone: getVal('emergencyContactPhone2') || undefined,
+              relationship:
+                getVal('emergencyContactRelationship2') || undefined,
+            }),
+          );
         }
 
         const emergencyName3 = getVal('emergencyContactName3');
         if (emergencyName3) {
-          await manager.save(EmployeeEmergencyContact, manager.create(EmployeeEmergencyContact, {
-            employeeId: saved.id,
-            name: emergencyName3,
-            phone: getVal('emergencyContactPhone3') || undefined,
-            relationship: getVal('emergencyContactRelationship3') || undefined,
-          }));
+          await manager.save(
+            EmployeeEmergencyContact,
+            manager.create(EmployeeEmergencyContact, {
+              employeeId: saved.id,
+              name: emergencyName3,
+              phone: getVal('emergencyContactPhone3') || undefined,
+              relationship:
+                getVal('emergencyContactRelationship3') || undefined,
+            }),
+          );
         }
 
         const historyEntry = manager.create(EmployeeHistory, {
@@ -928,7 +1181,7 @@ export class EmployeesImportExportService {
     headerRow.eachCell((cell, colNumber) => {
       const raw = cellToString(cell.value).trim();
       const lower = raw.toLowerCase().trim();
-      const colDef = COLUMNS.find((c) => c.header.toLowerCase() === lower);
+      const colDef = ALL_COLUMNS.find((c) => c.header.toLowerCase() === lower);
       if (colDef) {
         columnKeys[colNumber] = colDef.key;
         mappedColumns.push({ excelHeader: raw, mappedTo: colDef.key });

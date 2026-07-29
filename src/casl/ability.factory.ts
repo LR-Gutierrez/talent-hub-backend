@@ -1,10 +1,18 @@
 import { AbilityBuilder, Ability } from '@casl/ability';
 
-export type Subjects = 'User' | 'Employee' | 'EmployeeStatus' | 'Department' | 'CompanySettings' | 'all';
+export type Subjects =
+  | 'User'
+  | 'Employee'
+  | 'EmployeeStatus'
+  | 'Department'
+  | 'CompanySettings'
+  | 'all';
 export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage';
 
 export function defineAbilityFor(role: string) {
-  const { can, cannot, build } = new AbilityBuilder<Ability<[Actions, Subjects]>>(Ability);
+  const { can, cannot, build } = new AbilityBuilder<
+    Ability<[Actions, Subjects]>
+  >(Ability);
   switch (role) {
     case 'admin':
       can('manage', 'all');

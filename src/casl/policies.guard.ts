@@ -8,10 +8,10 @@ export class PoliciesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requirement = this.reflector.getAllAndOverride<[Actions, Subjects]>(ABILITY_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requirement = this.reflector.getAllAndOverride<[Actions, Subjects]>(
+      ABILITY_KEY,
+      [context.getHandler(), context.getClass()],
+    );
     if (!requirement) return true;
     const [action, subject] = requirement;
     const { user } = context.switchToHttp().getRequest();

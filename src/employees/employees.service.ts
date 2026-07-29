@@ -48,7 +48,16 @@ export class EmployeesService {
     departmentId?: string;
     withDeleted?: boolean;
   }) {
-    const { pageIndex, pageSize, query, sortKey, sortOrder, statusId, departmentId, withDeleted } = params;
+    const {
+      pageIndex,
+      pageSize,
+      query,
+      sortKey,
+      sortOrder,
+      statusId,
+      departmentId,
+      withDeleted,
+    } = params;
     const where: FindOptionsWhere<Employee> = {};
     if (query) {
       where.fullName = ILike(`%${query}%`);
@@ -184,8 +193,15 @@ export class EmployeesService {
     Object.assign(employee, employeeData);
     const saved = await this.employeeRepository.save(employee);
 
-    if (dto.educationLevel !== undefined || dto.degree !== undefined || dto.institution !== undefined || dto.graduationYear !== undefined) {
-      const existingEducation = await this.educationRepository.findOneBy({ employeeId: id });
+    if (
+      dto.educationLevel !== undefined ||
+      dto.degree !== undefined ||
+      dto.institution !== undefined ||
+      dto.graduationYear !== undefined
+    ) {
+      const existingEducation = await this.educationRepository.findOneBy({
+        employeeId: id,
+      });
       if (existingEducation) {
         Object.assign(existingEducation, {
           educationLevel: dto.educationLevel,
@@ -207,8 +223,16 @@ export class EmployeesService {
       }
     }
 
-    if (dto.shirtSize !== undefined || dto.pantSize !== undefined || dto.shoeSize !== undefined || dto.jacketSize !== undefined || dto.helmetSize !== undefined) {
-      const existingUniform = await this.uniformRepository.findOneBy({ employeeId: id });
+    if (
+      dto.shirtSize !== undefined ||
+      dto.pantSize !== undefined ||
+      dto.shoeSize !== undefined ||
+      dto.jacketSize !== undefined ||
+      dto.helmetSize !== undefined
+    ) {
+      const existingUniform = await this.uniformRepository.findOneBy({
+        employeeId: id,
+      });
       if (existingUniform) {
         Object.assign(existingUniform, {
           shirtSize: dto.shirtSize,
@@ -265,9 +289,15 @@ export class EmployeesService {
     return this.findOne(saved.id);
   }
 
-  async changeStatus(id: string, dto: ChangeEmployeeStatusDto, changedBy?: string) {
+  async changeStatus(
+    id: string,
+    dto: ChangeEmployeeStatusDto,
+    changedBy?: string,
+  ) {
     const employee = await this.findOne(id);
-    const newStatus = await this.statusRepository.findOneBy({ id: dto.statusId });
+    const newStatus = await this.statusRepository.findOneBy({
+      id: dto.statusId,
+    });
     if (!newStatus) throw new NotFoundException('EmployeeStatus not found');
 
     const oldStatusName = employee.status?.name ?? 'None';
@@ -287,7 +317,9 @@ export class EmployeesService {
   }
 
   async bulkChangeStatus(dto: BulkChangeEmployeeStatusDto, changedBy?: string) {
-    const newStatus = await this.statusRepository.findOneBy({ id: dto.statusId });
+    const newStatus = await this.statusRepository.findOneBy({
+      id: dto.statusId,
+    });
     if (!newStatus) throw new NotFoundException('EmployeeStatus not found');
 
     let changed = 0;
@@ -334,14 +366,25 @@ export class EmployeesService {
   }
 
   async restore(id: string) {
-    const employee = await this.employeeRepository.findOne({ where: { id }, withDeleted: true, relations: { educations: true, uniforms: true, children: true, emergencyContacts: true } });
+    const employee = await this.employeeRepository.findOne({
+      where: { id },
+      withDeleted: true,
+      relations: {
+        educations: true,
+        uniforms: true,
+        children: true,
+        emergencyContacts: true,
+      },
+    });
     if (!employee) throw new NotFoundException('Employee not found');
     return this.employeeRepository.recover(employee);
   }
 
   async getStats() {
     const totalEmployees = await this.employeeRepository.count();
-    const totalDepartments = await this.departmentRepository.count({ where: { isActive: true } });
+    const totalDepartments = await this.departmentRepository.count({
+      where: { isActive: true },
+    });
     const totalStatuses = await this.statusRepository.count();
     const totalGenders = await this.genderRepository.count();
 
@@ -357,31 +400,40 @@ export class EmployeesService {
       .addGroupBy('status.color')
       .orderBy('count', 'DESC')
       .getRawMany();
-    const employeesByStatus = rawByStatus.map((r) => ({ ...r, count: Number(r.count) }));
+    const employeesByStatus = rawByStatus.map((r) => ({
+      ...r,
+      count: Number(r.count),
+    }));
 
     const rawByDepartment = await this.employeeRepository
       .createQueryBuilder('employee')
       .select('employee.departmentId', 'departmentId')
-      .addSelect('COALESCE(department.name, \'Unassigned\')', 'departmentName')
+      .addSelect("COALESCE(department.name, 'Unassigned')", 'departmentName')
       .addSelect('COUNT(employee.id)', 'count')
       .leftJoin('employee.department', 'department')
       .groupBy('employee.departmentId')
       .addGroupBy('department.name')
       .orderBy('count', 'DESC')
       .getRawMany();
-    const employeesByDepartment = rawByDepartment.map((r) => ({ ...r, count: Number(r.count) }));
+    const employeesByDepartment = rawByDepartment.map((r) => ({
+      ...r,
+      count: Number(r.count),
+    }));
 
     const rawByGender = await this.employeeRepository
       .createQueryBuilder('employee')
       .select('employee.genderId', 'genderId')
-      .addSelect('COALESCE(gender.name, \'Unassigned\')', 'genderName')
+      .addSelect("COALESCE(gender.name, 'Unassigned')", 'genderName')
       .addSelect('COUNT(employee.id)', 'count')
       .leftJoin('employee.genderRef', 'gender')
       .groupBy('employee.genderId')
       .addGroupBy('gender.name')
       .orderBy('count', 'DESC')
       .getRawMany();
-    const employeesByGender = rawByGender.map((r) => ({ ...r, count: Number(r.count) }));
+    const employeesByGender = rawByGender.map((r) => ({
+      ...r,
+      count: Number(r.count),
+    }));
 
     const recentEmployees = await this.employeeRepository.find({
       order: { createdAt: 'DESC' },
@@ -389,6 +441,15 @@ export class EmployeesService {
       relations: { status: true, department: true },
     });
 
-    return { totalEmployees, totalDepartments, totalStatuses, totalGenders, employeesByStatus, employeesByDepartment, employeesByGender, recentEmployees };
+    return {
+      totalEmployees,
+      totalDepartments,
+      totalStatuses,
+      totalGenders,
+      employeesByStatus,
+      employeesByDepartment,
+      employeesByGender,
+      recentEmployees,
+    };
   }
 }

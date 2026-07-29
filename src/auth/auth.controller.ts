@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Res, Get, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Get,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 
@@ -27,7 +35,11 @@ export class AuthController {
     @Body() dto: { email: string; password: string; displayName?: string },
     @Res({ passthrough: true }) res: any,
   ) {
-    const result = await this.authService.signUp(dto.email, dto.password, dto.displayName);
+    const result = await this.authService.signUp(
+      dto.email,
+      dto.password,
+      dto.displayName,
+    );
     res.cookie('token', result.token, {
       httpOnly: true,
       secure: false,

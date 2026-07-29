@@ -1,4 +1,14 @@
-import { IsString, IsEmail, IsOptional, IsBoolean, IsNumber, IsDateString, IsUUID, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  IsBoolean,
+  IsNumber,
+  IsDateString,
+  IsUUID,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateEmployeeChildDto } from './create-employee-child.dto';
 import { CreateEmployeeEmergencyContactDto } from './create-employee-emergency-contact.dto';

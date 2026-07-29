@@ -12,7 +12,8 @@ export class AuthService {
 
   async signIn(email: string, password: string) {
     const user = await this.usersService.findByEmail(email);
-    if (!user || !user.isActive) throw new UnauthorizedException('Invalid credentials');
+    if (!user || !user.isActive)
+      throw new UnauthorizedException('Invalid credentials');
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new UnauthorizedException('Invalid credentials');
     const payload = { sub: user.id, email: user.email, role: user.role };
@@ -30,7 +31,11 @@ export class AuthService {
   }
 
   async signUp(email: string, password: string, displayName?: string) {
-    const user = await this.usersService.create({ email, password, displayName });
+    const user = await this.usersService.create({
+      email,
+      password,
+      displayName,
+    });
     const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
     return {

@@ -1,4 +1,14 @@
-import { Controller, Get, Put, Post, Body, UseGuards, UseInterceptors, UploadedFile, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Body,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  NotFoundException,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
@@ -82,7 +92,12 @@ export class CompanySettingsController {
       }),
       limits: { fileSize: 1 * 1024 * 1024 },
       fileFilter: (_req, file, cb) => {
-        if (!file.mimetype.match(/^image\/(png|jpeg|jpg|gif|svg\+xml|webp|x-icon)$/) && !file.originalname.match(/\.(ico)$/)) {
+        if (
+          !file.mimetype.match(
+            /^image\/(png|jpeg|jpg|gif|svg\+xml|webp|x-icon)$/,
+          ) &&
+          !file.originalname.match(/\.(ico)$/)
+        ) {
           cb(new NotFoundException('Only image files are allowed'), false);
         } else {
           cb(null, true);

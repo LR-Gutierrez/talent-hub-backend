@@ -51,24 +51,38 @@ export class EmployeeStatusesController {
   async findAll(
     @Query('pageIndex') pageIndex?: string,
     @Query('pageSize') pageSize?: string,
+    @Query('query') query?: string,
     @Query('withDeleted') withDeleted?: string,
   ) {
     const take = pageSize ? parseInt(pageSize, 10) : 100;
     const skip = ((pageIndex ? parseInt(pageIndex, 10) : 1) - 1) * take;
+    const where = query ? { name: ILike(`%${query}%`) } : {};
     const [list, total] = await this.statusRepository.findAndCount({
       order: { name: 'ASC' },
       take,
       skip,
+      where,
       withDeleted: withDeleted === 'true',
     });
-    return { list, total, pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1, pageSize: take };
+    return {
+      list,
+      total,
+      pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1,
+      pageSize: take,
+    };
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)
   @Get(':id')
   @RequireAbility('read', 'EmployeeStatus')
-  async findOne(@Param('id') id: string, @Query('withDeleted') withDeleted?: string) {
-    const status = await this.statusRepository.findOne({ where: { id }, withDeleted: withDeleted === 'true' });
+  async findOne(
+    @Param('id') id: string,
+    @Query('withDeleted') withDeleted?: string,
+  ) {
+    const status = await this.statusRepository.findOne({
+      where: { id },
+      withDeleted: withDeleted === 'true',
+    });
     if (!status) throw new NotFoundException('EmployeeStatus not found');
     return status;
   }
@@ -79,7 +93,9 @@ export class EmployeeStatusesController {
   async getEmployeeCount(@Param('id') id: string) {
     const status = await this.statusRepository.findOneBy({ id });
     if (!status) throw new NotFoundException('EmployeeStatus not found');
-    const count = await this.employeeRepository.count({ where: { statusId: id } });
+    const count = await this.employeeRepository.count({
+      where: { statusId: id },
+    });
     return { employeeCount: count };
   }
 
@@ -106,7 +122,9 @@ export class EmployeeStatusesController {
     const origStatus = await this.statusRepository.findOneBy({ id });
     if (!origStatus) throw new NotFoundException('EmployeeStatus not found');
 
-    const employeeCount = await this.employeeRepository.count({ where: { statusId: id } });
+    const employeeCount = await this.employeeRepository.count({
+      where: { statusId: id },
+    });
 
     if (employeeCount > 0 && !force) {
       throw new ConflictException({
@@ -134,20 +152,34 @@ export class EmployeeStatusesController {
           where: { name: ILike(trimmedName) },
           withDeleted: true,
         });
-        if (existing) throw new BadRequestException(`A status with the name "${trimmedName}" already exists.`);
-        const created = manager.create(EmployeeStatus, { name: trimmedName, isActive: true });
+        if (existing)
+          throw new BadRequestException(
+            `A status with the name "${trimmedName}" already exists.`,
+          );
+        const created = manager.create(EmployeeStatus, {
+          name: trimmedName,
+          isActive: true,
+        });
         const saved = await manager.save(EmployeeStatus, created);
         actualTargetId = saved.id;
         targetStatusName = saved.name;
       } else {
-        const targetStatus = await manager.findOne(EmployeeStatus, { where: { id: targetStatusId } });
-        if (!targetStatus) throw new NotFoundException('Target status not found');
-        if (targetStatus.id === id) throw new BadRequestException('Cannot reassign employees to the same status');
+        const targetStatus = await manager.findOne(EmployeeStatus, {
+          where: { id: targetStatusId },
+        });
+        if (!targetStatus)
+          throw new NotFoundException('Target status not found');
+        if (targetStatus.id === id)
+          throw new BadRequestException(
+            'Cannot reassign employees to the same status',
+          );
         actualTargetId = targetStatusId!;
         targetStatusName = targetStatus.name;
       }
 
-      const employees = await manager.find(Employee, { where: { statusId: id } });
+      const employees = await manager.find(Employee, {
+        where: { statusId: id },
+      });
       for (const employee of employees) {
         employee.statusId = actualTargetId;
         await manager.save(Employee, employee);
@@ -173,7 +205,10 @@ export class EmployeeStatusesController {
   @Patch(':id/restore')
   @RequireAbility('update', 'EmployeeStatus')
   async restore(@Param('id') id: string) {
-    const status = await this.statusRepository.findOne({ where: { id }, withDeleted: true });
+    const status = await this.statusRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
     if (!status) throw new NotFoundException('EmployeeStatus not found');
     return this.statusRepository.restore(status.id);
   }
@@ -184,7 +219,9 @@ export class EmployeeStatusesController {
       withDeleted: true,
     });
     if (existing && existing.id !== excludeId) {
-      throw new BadRequestException(`A status with the name "${name.trim()}" already exists.`);
+      throw new BadRequestException(
+        `A status with the name "${name.trim()}" already exists.`,
+      );
     }
   }
 }

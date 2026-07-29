@@ -139,16 +139,22 @@ export class Employee {
   @Column({ default: true })
   isActive: boolean;
 
-  @OneToMany(() => EmployeeEducation, (education) => education.employee, { cascade: true })
+  @OneToMany(() => EmployeeEducation, (education) => education.employee, {
+    cascade: true,
+  })
   educations: EmployeeEducation[];
 
-  @OneToMany(() => EmployeeUniform, (uniform) => uniform.employee, { cascade: true })
+  @OneToMany(() => EmployeeUniform, (uniform) => uniform.employee, {
+    cascade: true,
+  })
   uniforms: EmployeeUniform[];
 
   @OneToMany(() => EmployeeChild, (child) => child.employee, { cascade: true })
   children: EmployeeChild[];
 
-  @OneToMany(() => EmployeeEmergencyContact, (contact) => contact.employee, { cascade: true })
+  @OneToMany(() => EmployeeEmergencyContact, (contact) => contact.employee, {
+    cascade: true,
+  })
   emergencyContacts: EmployeeEmergencyContact[];
 
   @CreateDateColumn()

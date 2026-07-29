@@ -17,10 +17,30 @@ export class EmployeeStatusesSeeder implements OnModuleInit {
     if (count > 0) return;
 
     const statuses = [
-      { name: 'Active', description: 'Currently employed', color: '#22c55e', isActive: true },
-      { name: 'Inactive', description: 'No longer employed', color: '#ef4444', isActive: true },
-      { name: 'On Leave', description: 'Temporarily away', color: '#f59e0b', isActive: true },
-      { name: 'Probation', description: 'Under probation period', color: '#3b82f6', isActive: true },
+      {
+        name: 'Active',
+        description: 'Currently employed',
+        color: '#22c55e',
+        isActive: true,
+      },
+      {
+        name: 'Inactive',
+        description: 'No longer employed',
+        color: '#ef4444',
+        isActive: true,
+      },
+      {
+        name: 'On Leave',
+        description: 'Temporarily away',
+        color: '#f59e0b',
+        isActive: true,
+      },
+      {
+        name: 'Probation',
+        description: 'Under probation period',
+        color: '#3b82f6',
+        isActive: true,
+      },
     ];
 
     await this.statusRepo.save(statuses.map((s) => this.statusRepo.create(s)));

@@ -20,13 +20,32 @@ import { BloodType } from '../catalogs/entities/blood-type.entity';
 import { EmployeeStatusesSeeder } from './employees-statuses.seeder';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([
-    Employee, EmployeeStatus, EmployeeHistory, EmployeeEducation,
-    EmployeeUniform, EmployeeChild, EmployeeEmergencyContact,
-    Department, Gender, Country, MaritalStatus, BloodType,
-  ])],
-  controllers: [EmployeesController, EmployeeStatusesController, EmployeesImportExportController],
-  providers: [EmployeesService, EmployeesImportExportService, EmployeeStatusesSeeder],
+  imports: [
+    TypeOrmModule.forFeature([
+      Employee,
+      EmployeeStatus,
+      EmployeeHistory,
+      EmployeeEducation,
+      EmployeeUniform,
+      EmployeeChild,
+      EmployeeEmergencyContact,
+      Department,
+      Gender,
+      Country,
+      MaritalStatus,
+      BloodType,
+    ]),
+  ],
+  controllers: [
+    EmployeesController,
+    EmployeeStatusesController,
+    EmployeesImportExportController,
+  ],
+  providers: [
+    EmployeesService,
+    EmployeesImportExportService,
+    EmployeeStatusesSeeder,
+  ],
   exports: [EmployeesService],
 })
 export class EmployeesModule {}
