@@ -48,11 +48,12 @@ El servidor arranca en `http://localhost:3000`.
 ## Scripts
 
 ```bash
-npm run build       # Compilar a JavaScript
-npm run start       # Iniciar en producción
-npm run start:dev   # Iniciar con hot-reload
-npm run lint        # ESLint + Prettier
-npm run test        # Tests unitarios
+npm run build          # Compilar a JavaScript
+npm run start          # Iniciar en producción
+npm run start:dev      # Iniciar con hot-reload
+npm run key:generate   # Generar un nuevo JWT_SECRET en .env
+npm run lint           # ESLint + Prettier
+npm run test           # Tests unitarios
 ```
 
 ## Seeders
