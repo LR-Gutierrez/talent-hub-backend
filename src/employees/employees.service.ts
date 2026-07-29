@@ -46,20 +46,33 @@ export class EmployeesService {
     sortOrder?: string;
     statusId?: string;
     departmentId?: string;
+    withDeleted?: boolean;
   }) {
-    const { pageIndex, pageSize, query, sortKey, sortOrder, statusId, departmentId } = params;
+    const { pageIndex, pageSize, query, sortKey, sortOrder, statusId, departmentId, withDeleted } = params;
     const where: FindOptionsWhere<Employee> = {};
     if (query) {
       where.fullName = ILike(`%${query}%`);
     }
     if (statusId) where.statusId = statusId;
     if (departmentId) where.departmentId = departmentId;
-    const order: any = sortKey && sortOrder ? { [sortKey]: sortOrder } : { fullName: 'ASC' };
+    let order: any = { fullName: 'ASC' };
+    if (sortKey && sortOrder) {
+      if (sortKey === 'department') {
+        order = { department: { name: sortOrder } };
+      } else if (sortKey === 'status') {
+        order = { status: { name: sortOrder } };
+      } else if (sortKey === 'supervisor') {
+        order = { supervisor: { fullName: sortOrder } };
+      } else {
+        order = { [sortKey]: sortOrder };
+      }
+    }
     const [list, total] = await this.employeeRepository.findAndCount({
       where,
       order,
       skip: (pageIndex - 1) * pageSize,
       take: pageSize,
+      withDeleted,
       relations: {
         status: true,
         supervisor: true,
@@ -73,9 +86,10 @@ export class EmployeesService {
     return { list, total };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, withDeleted = false) {
     const employee = await this.employeeRepository.findOne({
       where: { id },
+      withDeleted,
       relations: {
         status: true,
         supervisor: true,
@@ -316,7 +330,13 @@ export class EmployeesService {
 
   async remove(id: string) {
     const employee = await this.findOne(id);
-    await this.employeeRepository.remove(employee);
+    await this.employeeRepository.softRemove(employee);
+  }
+
+  async restore(id: string) {
+    const employee = await this.employeeRepository.findOne({ where: { id }, withDeleted: true, relations: { educations: true, uniforms: true, children: true, emergencyContacts: true } });
+    if (!employee) throw new NotFoundException('Employee not found');
+    return this.employeeRepository.recover(employee);
   }
 
   async getStats() {

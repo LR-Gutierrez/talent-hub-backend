@@ -38,6 +38,7 @@ export class UsersController {
     @Query('query') query?: string,
     @Query('sortKey') sortKey?: string,
     @Query('sortOrder') sortOrder?: string,
+    @Query('withDeleted') withDeleted?: string,
   ) {
     return this.usersService.findAll({
       pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1,
@@ -45,6 +46,7 @@ export class UsersController {
       query: query || '',
       sortKey,
       sortOrder,
+      withDeleted: withDeleted === 'true',
     });
   }
 
@@ -57,8 +59,8 @@ export class UsersController {
   @UseGuards(AuthGuard, PoliciesGuard)
   @Get(':id')
   @RequireAbility('read', 'User')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  findOne(@Param('id') id: string, @Query('withDeleted') withDeleted?: string) {
+    return this.usersService.findOne(id, withDeleted === 'true');
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)
@@ -71,8 +73,15 @@ export class UsersController {
   @UseGuards(AuthGuard, PoliciesGuard)
   @Delete(':id')
   @RequireAbility('delete', 'User')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.usersService.remove(id, req.user?.userId);
+  }
+
+  @UseGuards(AuthGuard, PoliciesGuard)
+  @Patch(':id/restore')
+  @RequireAbility('update', 'User')
+  restore(@Param('id') id: string) {
+    return this.usersService.restore(id);
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)

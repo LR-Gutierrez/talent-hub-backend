@@ -48,6 +48,7 @@ export class EmployeesController {
     @Query('sortOrder') sortOrder?: string,
     @Query('statusId') statusId?: string,
     @Query('departmentId') departmentId?: string,
+    @Query('withDeleted') withDeleted?: string,
   ) {
     return this.employeesService.findAll({
       pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1,
@@ -57,6 +58,7 @@ export class EmployeesController {
       sortOrder,
       statusId,
       departmentId,
+      withDeleted: withDeleted === 'true',
     });
   }
 
@@ -77,8 +79,8 @@ export class EmployeesController {
   @UseGuards(AuthGuard, PoliciesGuard)
   @Get(':id')
   @RequireAbility('read', 'Employee')
-  findOne(@Param('id') id: string) {
-    return this.employeesService.findOne(id);
+  findOne(@Param('id') id: string, @Query('withDeleted') withDeleted?: string) {
+    return this.employeesService.findOne(id, withDeleted === 'true');
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)
@@ -143,5 +145,12 @@ export class EmployeesController {
   @RequireAbility('delete', 'Employee')
   remove(@Param('id') id: string) {
     return this.employeesService.remove(id);
+  }
+
+  @UseGuards(AuthGuard, PoliciesGuard)
+  @Patch(':id/restore')
+  @RequireAbility('update', 'Employee')
+  restore(@Param('id') id: string) {
+    return this.employeesService.restore(id);
   }
 }

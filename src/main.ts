@@ -20,6 +20,12 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.use((_req: any, res: any, next: any) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    next();
+  });
   app.useStaticAssets(join(__dirname, '..', 'uploads'), { prefix: '/uploads' });
   await app.listen(process.env.PORT ?? 3000);
 }

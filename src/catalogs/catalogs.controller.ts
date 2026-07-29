@@ -27,6 +27,7 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
     @Query('pageIndex') pageIndex?: string,
     @Query('pageSize') pageSize?: string,
     @Query('locale') locale?: string,
+    @Query('withDeleted') withDeleted?: string,
   ): Promise<{ list: T[]; total: number; pageIndex: number; pageSize: number }> {
     const take = pageSize ? parseInt(pageSize, 10) : 100;
     const skip = ((pageIndex ? parseInt(pageIndex, 10) : 1) - 1) * take;
@@ -34,6 +35,7 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
       order: { sortOrder: 'ASC' } as any,
       take,
       skip,
+      withDeleted: withDeleted === 'true',
     });
     if (locale && locale !== 'en') {
       for (const item of list) {
@@ -44,8 +46,8 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<T> {
-    const entity = await this.repository.findOne({ where: { id } as any });
+  async findOne(@Param('id') id: string, @Query('withDeleted') withDeleted?: string): Promise<T> {
+    const entity = await this.repository.findOne({ where: { id } as any, withDeleted: withDeleted === 'true' });
     if (!entity) throw new NotFoundException();
     return entity;
   }
@@ -64,8 +66,19 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
 
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
-    const result = await this.repository.delete(id);
-    if (result.affected === 0) throw new NotFoundException();
+    const entity = await this.repository.findOne({ where: { id } as any });
+    if (!entity) throw new NotFoundException();
+    await this.repository.softRemove(entity);
+  }
+
+  @Patch(':id/restore')
+  async restore(@Param('id') id: string): Promise<void> {
+    const entity = await this.repository.findOne({
+      where: { id } as any,
+      withDeleted: true,
+    });
+    if (!entity) throw new NotFoundException();
+    await this.repository.restore(entity.id);
   }
 }
 

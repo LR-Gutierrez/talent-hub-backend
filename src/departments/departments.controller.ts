@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
@@ -34,19 +35,29 @@ export class DepartmentsController {
     @Query('pageIndex') pageIndex?: string,
     @Query('pageSize') pageSize?: string,
     @Query('query') query?: string,
+    @Query('withDeleted') withDeleted?: string,
   ) {
     return this.departmentsService.findAll({
       pageIndex: pageIndex ? parseInt(pageIndex, 10) : 1,
       pageSize: pageSize ? parseInt(pageSize, 10) : 100,
       query,
+      withDeleted: withDeleted === 'true',
     });
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)
   @Get(':id')
   @RequireAbility('read', 'Department')
-  findOne(@Param('id') id: string) {
-    return this.departmentsService.findOne(id);
+  findOne(@Param('id') id: string, @Query('withDeleted') withDeleted?: string) {
+    return this.departmentsService.findOne(id, withDeleted === 'true');
+  }
+
+  @UseGuards(AuthGuard, PoliciesGuard)
+  @Get(':id/employee-count')
+  @RequireAbility('read', 'Department')
+  async getEmployeeCount(@Param('id') id: string) {
+    const count = await this.departmentsService.getEmployeeCount(id);
+    return { employeeCount: count };
   }
 
   @UseGuards(AuthGuard, PoliciesGuard)
@@ -59,7 +70,20 @@ export class DepartmentsController {
   @UseGuards(AuthGuard, PoliciesGuard)
   @Delete(':id')
   @RequireAbility('delete', 'Department')
-  remove(@Param('id') id: string) {
-    return this.departmentsService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Query('force') force?: string,
+    @Query('targetDepartmentId') targetDepartmentId?: string,
+    @Query('newDepartmentName') newDepartmentName?: string,
+  ) {
+    return this.departmentsService.remove(id, req.user?.email, force === 'true', targetDepartmentId, newDepartmentName);
+  }
+
+  @UseGuards(AuthGuard, PoliciesGuard)
+  @Patch(':id/restore')
+  @RequireAbility('update', 'Department')
+  restore(@Param('id') id: string) {
+    return this.departmentsService.restore(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -13,8 +13,8 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findAll(params: { pageIndex: number; pageSize: number; query: string; sortKey?: string; sortOrder?: string }) {
-    const { pageIndex, pageSize, query, sortKey, sortOrder } = params;
+  async findAll(params: { pageIndex: number; pageSize: number; query: string; sortKey?: string; sortOrder?: string; withDeleted?: boolean }) {
+    const { pageIndex, pageSize, query, sortKey, sortOrder, withDeleted } = params;
     const where = query
       ? [
           { displayName: ILike(`%${query}%`) },
@@ -27,12 +27,13 @@ export class UsersService {
       order,
       skip: (pageIndex - 1) * pageSize,
       take: pageSize,
+      withDeleted,
     });
     return { list, total };
   }
 
-  async findOne(id: string) {
-    const user = await this.usersRepository.findOneBy({ id });
+  async findOne(id: string, withDeleted = false) {
+    const user = await this.usersRepository.findOne({ where: { id }, withDeleted });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
@@ -58,8 +59,17 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUserId?: string) {
+    if (currentUserId && id === currentUserId) {
+      throw new ForbiddenException('You cannot delete your own account');
+    }
     const user = await this.findOne(id);
-    await this.usersRepository.remove(user);
+    await this.usersRepository.softRemove(user);
+  }
+
+  async restore(id: string) {
+    const user = await this.usersRepository.findOne({ where: { id }, withDeleted: true });
+    if (!user) throw new NotFoundException('User not found');
+    return this.usersRepository.restore(user.id);
   }
 }
