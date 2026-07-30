@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User, UserRole } from './entities/user.entity';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersSeeder implements OnModuleInit {
@@ -20,7 +20,7 @@ export class UsersSeeder implements OnModuleInit {
       email: 'admin@local.com',
       password: '123Qwe',
       displayName: 'Admin',
-      role: UserRole.ADMIN,
+      role: 'admin',
       isActive: true,
     });
     await this.usersRepo.save(user);

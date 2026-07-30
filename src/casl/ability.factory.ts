@@ -6,41 +6,38 @@ export type Subjects =
   | 'EmployeeStatus'
   | 'Department'
   | 'CompanySettings'
+  | 'Role'
+  | 'Catalog'
   | 'all';
 export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage';
 
-export function defineAbilityFor(role: string) {
+export function defineAbilityFor(permissions: string[], role?: string) {
   const { can, cannot, build } = new AbilityBuilder<
     Ability<[Actions, Subjects]>
   >(Ability);
-  switch (role) {
-    case 'admin':
-      can('manage', 'all');
-      break;
-    case 'supervisor':
-      can('read', 'User');
-      can('create', 'User');
-      can('update', 'User');
-      cannot('delete', 'User');
-      can('manage', 'Employee');
-      cannot('delete', 'Employee');
-      can('read', 'EmployeeStatus');
-      can('read', 'Department');
-      break;
-    case 'monitor':
-      can('read', 'User');
-      can('update', 'User');
-      cannot('create', 'User');
-      cannot('delete', 'User');
-      can('read', 'Employee');
-      can('read', 'EmployeeStatus');
-      can('read', 'Department');
-      break;
-    default:
-      can('read', 'User');
-      can('read', 'Employee');
-      can('read', 'EmployeeStatus');
-      can('read', 'Department');
+
+  if (role === 'admin' || permissions.includes('*')) {
+    can('manage', 'all');
+    return build();
   }
+
+  const subjectMap: Record<string, Subjects> = {
+    employee: 'Employee',
+    'employee-status': 'EmployeeStatus',
+    department: 'Department',
+    user: 'User',
+    'company-settings': 'CompanySettings',
+    catalog: 'Catalog',
+    role: 'Role',
+  };
+
+  for (const perm of permissions) {
+    const [rawSubject, action] = perm.split(':');
+    const subject = subjectMap[rawSubject];
+    if (subject && action) {
+      can(action as Actions, subject);
+    }
+  }
+
   return build();
 }

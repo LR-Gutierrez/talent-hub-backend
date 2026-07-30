@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,6 +19,9 @@ import { Repository, ILike } from 'typeorm';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import * as fs from 'fs';
+import { AuthGuard } from '../auth/auth.guard';
+import { PoliciesGuard } from '../casl/policies.guard';
+import { RequireAbility } from '../casl/require-ability.decorator';
 import { BaseCatalogEntity } from './entities/base-catalog.entity';
 import { Gender } from './entities/gender.entity';
 import { MaritalStatus } from './entities/marital-status.entity';
@@ -29,10 +33,12 @@ import { BloodType } from './entities/blood-type.entity';
 import { CreateCatalogDto } from './dto/create-catalog.dto';
 import { UpdateCatalogDto } from './dto/update-catalog.dto';
 
+@UseGuards(AuthGuard, PoliciesGuard)
 abstract class BaseCatalogController<T extends BaseCatalogEntity> {
   constructor(protected readonly repository: Repository<T>) {}
 
   @Get()
+  @RequireAbility('read', 'Catalog')
   async findAll(
     @Query('pageIndex') pageIndex?: string,
     @Query('pageSize') pageSize?: string,
@@ -73,6 +79,7 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
   }
 
   @Get(':id')
+  @RequireAbility('read', 'Catalog')
   async findOne(
     @Param('id') id: string,
     @Query('withDeleted') withDeleted?: string,
@@ -86,11 +93,13 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
   }
 
   @Post()
+  @RequireAbility('create', 'Catalog')
   async create(@Body() dto: CreateCatalogDto): Promise<T> {
     return this.repository.save(dto as any);
   }
 
   @Patch(':id')
+  @RequireAbility('update', 'Catalog')
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateCatalogDto,
@@ -101,6 +110,7 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
   }
 
   @Delete(':id')
+  @RequireAbility('delete', 'Catalog')
   async remove(@Param('id') id: string): Promise<void> {
     const entity = await this.repository.findOne({ where: { id } as any });
     if (!entity) throw new NotFoundException();
@@ -108,6 +118,7 @@ abstract class BaseCatalogController<T extends BaseCatalogEntity> {
   }
 
   @Patch(':id/restore')
+  @RequireAbility('update', 'Catalog')
   async restore(@Param('id') id: string): Promise<void> {
     const entity = await this.repository.findOne({
       where: { id } as any,

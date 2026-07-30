@@ -11,6 +11,8 @@ import { DepartmentsModule } from './departments/departments.module';
 import { CompanySettingsModule } from './company-settings/company-settings.module';
 import { CatalogsModule } from './catalogs/catalogs.module';
 import { HealthModule } from './health/health.module';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -44,6 +46,8 @@ import databaseConfig from './config/database.config';
         synchronize: process.env.DB_SYNCHRONIZE === 'true',
       }),
     }),
+    PermissionsModule,
+    RolesModule,
     UsersModule,
     AuthModule,
     CaslModule,

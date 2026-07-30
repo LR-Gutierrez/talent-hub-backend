@@ -16,7 +16,7 @@ export class PoliciesGuard implements CanActivate {
     const [action, subject] = requirement;
     const { user } = context.switchToHttp().getRequest();
     if (!user) return false;
-    const ability = defineAbilityFor(user.role);
+    const ability = defineAbilityFor(user.permissions ?? [], user.role);
     return ability.can(action, subject);
   }
 }

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import { UsersService } from './users.service';
-import { User, UserRole } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('mocked-hash'),
@@ -21,7 +21,7 @@ describe('UsersService', () => {
     password: 'hashed-password',
     displayName: 'Test User',
     photoUrl: null,
-    role: UserRole.CANDIDATE,
+    role: 'monitor',
     isActive: true,
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),

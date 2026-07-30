@@ -2,12 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
+import { RolesService } from '../roles/roles.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly rolesService: RolesService,
   ) {}
 
   async signIn(email: string, password: string) {
@@ -16,7 +18,19 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new UnauthorizedException('Invalid credentials');
-    const payload = { sub: user.id, email: user.email, role: user.role };
+
+    const roles = await this.rolesService.findAll();
+    const role = roles.list.find((r) => r.name === user.role);
+    const permissions = role
+      ? role.permissions.map((p) => p.name)
+      : ['user:read', 'user:update'];
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      permissions,
+    };
     const token = this.jwtService.sign(payload);
     return {
       token,
@@ -24,7 +38,8 @@ export class AuthService {
         userId: user.id,
         userName: user.displayName ?? user.email,
         email: user.email,
-        authority: [user.role],
+        role: user.role,
+        authority: permissions,
         avatar: user.photoUrl ?? null,
       },
     };
@@ -36,7 +51,18 @@ export class AuthService {
       password,
       displayName,
     });
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const roles = await this.rolesService.findAll();
+    const role = roles.list.find((r) => r.name === user.role);
+    const permissions = role
+      ? role.permissions.map((p) => p.name)
+      : ['user:read', 'user:update'];
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      permissions,
+    };
     const token = this.jwtService.sign(payload);
     return {
       token,
@@ -44,7 +70,8 @@ export class AuthService {
         userId: user.id,
         userName: user.displayName ?? user.email,
         email: user.email,
-        authority: [user.role],
+        role: user.role,
+        authority: permissions,
         avatar: null,
       },
     };

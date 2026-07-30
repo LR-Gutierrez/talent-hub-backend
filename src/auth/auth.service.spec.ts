@@ -3,13 +3,15 @@ import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { User, UserRole } from '../users/entities/user.entity';
+import { RolesService } from '../roles/roles.service';
+import { User } from '../users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
   let service: AuthService;
   let usersService: jest.Mocked<UsersService>;
   let jwtService: jest.Mocked<JwtService>;
+  let rolesService: jest.Mocked<RolesService>;
 
   const mockUser: User = {
     id: 'user-1',
@@ -17,7 +19,7 @@ describe('AuthService', () => {
     password: bcrypt.hashSync('correct-password', 10),
     displayName: 'Test User',
     photoUrl: null,
-    role: UserRole.ADMIN,
+    role: 'admin',
     isActive: true,
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),
@@ -35,11 +37,18 @@ describe('AuthService', () => {
       sign: jest.fn().mockReturnValue('mock-jwt-token'),
     } as any;
 
+    rolesService = {
+      findAll: jest.fn().mockResolvedValue({
+        list: [{ name: 'admin', permissions: [{ name: 'employee:read' }] }],
+      }),
+    } as any;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: UsersService, useValue: usersService },
         { provide: JwtService, useValue: jwtService },
+        { provide: RolesService, useValue: rolesService },
       ],
     }).compile();
 
@@ -60,7 +69,8 @@ describe('AuthService', () => {
         userId: mockUser.id,
         userName: mockUser.displayName,
         email: mockUser.email,
-        authority: [mockUser.role],
+        role: mockUser.role,
+        authority: ['employee:read'],
         avatar: null,
       });
       expect(usersService.findByEmail).toHaveBeenCalledWith('test@example.com');
@@ -68,6 +78,7 @@ describe('AuthService', () => {
         sub: mockUser.id,
         email: mockUser.email,
         role: mockUser.role,
+        permissions: ['employee:read'],
       });
     });
 
@@ -115,7 +126,8 @@ describe('AuthService', () => {
         userId: createdUser.id,
         userName: createdUser.displayName,
         email: createdUser.email,
-        authority: [createdUser.role],
+        role: createdUser.role,
+        authority: ['employee:read'],
         avatar: null,
       });
       expect(usersService.create).toHaveBeenCalledWith({

@@ -2,11 +2,9 @@ import {
   IsString,
   IsEmail,
   IsOptional,
-  IsEnum,
   IsBoolean,
   MinLength,
 } from 'class-validator';
-import { UserRole } from '../entities/user.entity';
 
 export class CreateUserDto {
   @IsEmail()
@@ -25,8 +23,8 @@ export class CreateUserDto {
   photoUrl?: string;
 
   @IsOptional()
-  @IsEnum(UserRole)
-  role?: UserRole;
+  @IsString()
+  role?: string;
 
   @IsOptional()
   @IsBoolean()

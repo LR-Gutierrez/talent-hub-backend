@@ -17,6 +17,7 @@ import {
   BloodTypesController,
 } from './catalogs.controller';
 import { CatalogsSeeder } from './catalogs.seeder';
+import { CaslModule } from '../casl/casl.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CatalogsSeeder } from './catalogs.seeder';
       Country,
       BloodType,
     ]),
+    CaslModule,
   ],
   controllers: [
     GendersController,
